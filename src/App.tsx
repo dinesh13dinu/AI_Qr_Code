@@ -93,10 +93,17 @@ function Dashboard() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <div>
-          <span className="eyebrow">QR campaign platform</span>
-          <h1>Campaign QR dashboard</h1>
-          <p>Create branded QR links, manage partners, and review campaign performance from one simple platform.</p>
+        <div className="brand-lockup">
+          <div className="brand-mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+          <div>
+            <strong>Euphoria.QR</strong>
+            <span>Partner QR platform</span>
+          </div>
         </div>
         <div className="topbar-actions">
           <button className="refresh-button secondary-button" type="button" onClick={logout}>

@@ -1,6 +1,4 @@
 import { FormEvent, useState } from "react";
-import { LockKeyhole } from "lucide-react";
-
 type LoginScreenProps = {
   onLogin: () => void;
 };
@@ -29,10 +27,18 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   return (
     <main className="login-screen">
       <form className="login-card" onSubmit={handleSubmit}>
-        <div className="login-icon">
-          <LockKeyhole size={28} />
+        <div className="brand-lockup login-brand">
+          <div className="brand-mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+          <div>
+            <strong>Euphoria.QR</strong>
+            <span>Partner QR platform</span>
+          </div>
         </div>
-        <span className="eyebrow">QR campaign platform</span>
         <h1>Admin login</h1>
         <label htmlFor="admin-username">Username</label>
         <input
