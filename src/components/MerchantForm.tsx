@@ -7,7 +7,7 @@ import { toSlug } from "../lib/url";
 type MerchantFormProps = {
   editingMerchant: Merchant | null;
   onCancelEdit: () => void;
-  onSaved: () => void;
+  onSaved: (merchant: Merchant) => void;
 };
 
 type DestinationType = "direct" | "appsflyer";
@@ -109,14 +109,12 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
         notes: form.notes.trim(),
       };
 
-      if (editingMerchant) {
-        await updateMerchant({ ...payload, id: editingMerchant.id });
-      } else {
-        await createMerchant(payload);
-      }
+      const savedMerchant = editingMerchant
+        ? await updateMerchant({ ...payload, id: editingMerchant.id })
+        : await createMerchant(payload);
 
       setForm(emptyForm);
-      onSaved();
+      onSaved(savedMerchant);
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "Could not save merchant.";
       setError(message);
@@ -301,7 +299,7 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           )}
           <button type="submit" disabled={isSaving}>
             {isEditing ? <Check size={18} /> : <Plus size={18} />}
-            {isSaving ? "Saving" : isEditing ? "Save changes" : "Create QR"}
+            {isSaving ? "Saving" : isEditing ? "Save changes" : "Generate QR"}
           </button>
         </div>
       </div>

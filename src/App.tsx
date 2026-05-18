@@ -12,6 +12,7 @@ import "./styles.css";
 function Dashboard() {
   const [merchants, setMerchants] = useState<MerchantWithStats[]>([]);
   const [editingMerchant, setEditingMerchant] = useState<Merchant | null>(null);
+  const [generatedMerchant, setGeneratedMerchant] = useState<MerchantWithStats | null>(null);
   const [activePage, setActivePage] = useState<"qr" | "reporting">("qr");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,6 +38,15 @@ function Dashboard() {
   function logout() {
     window.localStorage.removeItem("ai_qr_admin_session");
     window.location.reload();
+  }
+
+  function showGeneratedMerchant(merchant: Merchant) {
+    const currentStats = merchants.find((item) => item.id === merchant.id);
+    setGeneratedMerchant({
+      ...merchant,
+      scans: currentStats?.scans ?? 0,
+      last_scan_at: currentStats?.last_scan_at ?? null,
+    });
   }
 
   function exportCsv() {
@@ -131,29 +141,32 @@ function Dashboard() {
             <MerchantForm
               editingMerchant={editingMerchant}
               onCancelEdit={() => setEditingMerchant(null)}
-              onSaved={() => {
+              onSaved={(merchant) => {
                 setEditingMerchant(null);
+                showGeneratedMerchant(merchant);
                 loadMerchants();
               }}
             />
           </section>
 
-          <section className="panel">
-            <div className="panel-heading">
-              <div>
-                <h2>Merchant QR codes</h2>
-                <p>Create, edit, download, and test each merchant QR code.</p>
+          {generatedMerchant && (
+            <section className="panel generated-panel">
+              <div className="panel-heading">
+                <div>
+                  <h2>Generated QR code</h2>
+                  <p>This QR is shown for this session. Refreshing the page clears it from here.</p>
+                </div>
               </div>
-              <div className="panel-actions">
-                <button className="refresh-button data-refresh" type="button" onClick={loadMerchants}>
-                  <RefreshCw size={18} />
-                  Refresh
-                </button>
-                {isLoading && <span className="loading">Loading</span>}
-              </div>
-            </div>
-            <MerchantTable merchants={merchants} onEdit={setEditingMerchant} onChanged={loadMerchants} />
-          </section>
+              <MerchantTable
+                merchants={[generatedMerchant]}
+                onEdit={setEditingMerchant}
+                onChanged={() => {
+                  setGeneratedMerchant(null);
+                  loadMerchants();
+                }}
+              />
+            </section>
+          )}
         </>
       ) : (
         <ReportingPage
