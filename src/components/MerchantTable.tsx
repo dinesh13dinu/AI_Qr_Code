@@ -9,9 +9,10 @@ type MerchantTableProps = {
   merchants: MerchantWithStats[];
   onEdit: (merchant: Merchant) => void;
   onChanged: () => void;
+  showStats?: boolean;
 };
 
-export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTableProps) {
+export function MerchantTable({ merchants, onEdit, onChanged, showStats = false }: MerchantTableProps) {
   const [qrImages, setQrImages] = useState<Record<string, string>>({});
   const [deletingId, setDeletingId] = useState("");
 
@@ -81,7 +82,7 @@ export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTablePro
         const finalUrl = getMerchantDestination(merchant, "desktop");
 
         return (
-          <article className="merchant-row" key={merchant.id}>
+          <article className={showStats ? "merchant-row" : "merchant-row without-stats"} key={merchant.id}>
             <img className="qr-image" src={qrImages[merchant.id]} alt={`${merchant.name} QR code`} />
 
             <div className="merchant-main">
@@ -93,7 +94,7 @@ export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTablePro
                 </span>
               </div>
               <div className="merchant-meta">
-                <span>{merchant.destination_type === "appsflyer" ? "Attribution link" : "Normal link"}</span>
+                <span>{merchant.destination_type === "appsflyer" ? "Branch link" : "Normal link"}</span>
                 <span>{merchant.app_name || "No app name"}</span>
                 <span>Campaign: {merchant.campaign}</span>
                 <span>
@@ -140,21 +141,23 @@ export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTablePro
               {merchant.notes && <p className="merchant-note">{merchant.notes}</p>}
               {merchant.destination_type === "appsflyer" && (
                 <p className="merchant-note">
-                  Tracking params: source={merchant.appsflyer_pid || "from link"} campaign={merchant.campaign} partner=
+                  Branch params: channel={merchant.appsflyer_pid || "from link"} campaign={merchant.campaign} partner=
                   {merchant.slug}
                 </p>
               )}
             </div>
 
-            <div className="merchant-stats">
-              <strong>{merchant.scans}</strong>
-              <span>scans</span>
-              <small>
-                {merchant.last_scan_at
-                  ? new Date(merchant.last_scan_at).toLocaleString()
-                  : "No scans yet"}
-              </small>
-            </div>
+            {showStats && (
+              <div className="merchant-stats">
+                <strong>{merchant.scans}</strong>
+                <span>scans</span>
+                <small>
+                  {merchant.last_scan_at
+                    ? new Date(merchant.last_scan_at).toLocaleString()
+                    : "No scans yet"}
+                </small>
+              </div>
+            )}
           </article>
         );
       })}

@@ -30,16 +30,20 @@ export function detectDevice(userAgent: string) {
 export function addTrackingParams(baseUrl: string, campaign: string, merchantSlug: string, pid?: string | null) {
   const url = new URL(baseUrl);
 
-  if (pid && !url.searchParams.get("pid")) {
-    url.searchParams.set("pid", pid);
+  if (pid && !url.searchParams.get("~channel")) {
+    url.searchParams.set("~channel", pid);
   }
 
-  if (!url.searchParams.get("c")) {
-    url.searchParams.set("c", campaign);
+  if (!url.searchParams.get("~campaign")) {
+    url.searchParams.set("~campaign", campaign);
   }
 
-  if (!url.searchParams.get("af_sub1")) {
-    url.searchParams.set("af_sub1", merchantSlug);
+  if (!url.searchParams.get("~feature")) {
+    url.searchParams.set("~feature", "qr");
+  }
+
+  if (!url.searchParams.get("partner")) {
+    url.searchParams.set("partner", merchantSlug);
   }
 
   return url.toString();

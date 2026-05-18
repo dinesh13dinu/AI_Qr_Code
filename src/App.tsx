@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Download, LogOut, RefreshCw, ShieldCheck } from "lucide-react";
+import { ArrowRight, BarChart3, Download, LogOut, QrCode, RefreshCw, ShieldCheck } from "lucide-react";
 import { LoginScreen } from "./components/LoginScreen";
 import { MerchantForm } from "./components/MerchantForm";
 import { MerchantTable } from "./components/MerchantTable";
@@ -12,6 +12,7 @@ import "./styles.css";
 function Dashboard() {
   const [merchants, setMerchants] = useState<MerchantWithStats[]>([]);
   const [editingMerchant, setEditingMerchant] = useState<Merchant | null>(null);
+  const [activePage, setActivePage] = useState<"qr" | "reporting">("qr");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -56,7 +57,7 @@ function Dashboard() {
         merchant.name,
         merchant.location || "",
         merchant.app_name || "",
-        merchant.destination_type,
+        merchant.destination_type === "appsflyer" ? "Branch link" : "Normal link",
         merchant.campaign,
         `${window.location.origin}/m/${merchant.slug}`,
         String(merchant.scans),
@@ -85,13 +86,9 @@ function Dashboard() {
         <div>
           <span className="eyebrow">QR campaign platform</span>
           <h1>Campaign QR dashboard</h1>
-          <p>Create branded QR links, manage partners, and track every scan from one simple dashboard.</p>
+          <p>Create branded QR links, manage partners, and review campaign performance from one simple platform.</p>
         </div>
         <div className="topbar-actions">
-          <button className="refresh-button" type="button" onClick={exportCsv}>
-            <Download size={18} />
-            Export CSV
-          </button>
           <button className="refresh-button secondary-button" type="button" onClick={logout}>
             <LogOut size={18} />
             Logout
@@ -107,42 +104,133 @@ function Dashboard() {
 
       {error && <div className="notice error">{error}</div>}
 
+      <nav className="page-tabs" aria-label="Dashboard pages">
+        <button className={activePage === "qr" ? "selected" : ""} type="button" onClick={() => setActivePage("qr")}>
+          <QrCode size={18} />
+          QR Codes
+        </button>
+        <button
+          className={activePage === "reporting" ? "selected" : ""}
+          type="button"
+          onClick={() => setActivePage("reporting")}
+        >
+          <BarChart3 size={18} />
+          Reporting
+        </button>
+      </nav>
+
+      {activePage === "qr" ? (
+        <>
+          <section className="panel">
+            <div className="panel-heading">
+              <div>
+                <h2>{editingMerchant ? "Edit merchant QR" : "Create merchant QR"}</h2>
+                <p>Add a direct link today, or switch to a Branch attribution link when the client provides one.</p>
+              </div>
+            </div>
+            <MerchantForm
+              editingMerchant={editingMerchant}
+              onCancelEdit={() => setEditingMerchant(null)}
+              onSaved={() => {
+                setEditingMerchant(null);
+                loadMerchants();
+              }}
+            />
+          </section>
+
+          <section className="panel">
+            <div className="panel-heading">
+              <div>
+                <h2>Merchant QR codes</h2>
+                <p>Create, edit, download, and test each merchant QR code.</p>
+              </div>
+              <div className="panel-actions">
+                <button className="refresh-button data-refresh" type="button" onClick={loadMerchants}>
+                  <RefreshCw size={18} />
+                  Refresh
+                </button>
+                {isLoading && <span className="loading">Loading</span>}
+              </div>
+            </div>
+            <MerchantTable merchants={merchants} onEdit={setEditingMerchant} onChanged={loadMerchants} />
+          </section>
+        </>
+      ) : (
+        <ReportingPage merchants={merchants} isLoading={isLoading} onRefresh={loadMerchants} onExport={exportCsv} />
+      )}
+    </main>
+  );
+}
+
+type ReportingPageProps = {
+  merchants: MerchantWithStats[];
+  isLoading: boolean;
+  onRefresh: () => void;
+  onExport: () => void;
+};
+
+function ReportingPage({ merchants, isLoading, onRefresh, onExport }: ReportingPageProps) {
+  return (
+    <>
       <StatsStrip merchants={merchants} />
 
       <section className="panel">
         <div className="panel-heading">
           <div>
-            <h2>{editingMerchant ? "Edit merchant QR" : "Create merchant QR"}</h2>
-            <p>Add a direct link today, or switch to an attribution link when the client provides one.</p>
-          </div>
-        </div>
-        <MerchantForm
-          editingMerchant={editingMerchant}
-          onCancelEdit={() => setEditingMerchant(null)}
-          onSaved={() => {
-            setEditingMerchant(null);
-            loadMerchants();
-          }}
-        />
-      </section>
-
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <h2>Merchant QR codes</h2>
-            <p>Each QR logs a scan first, then forwards to the saved destination.</p>
+            <h2>Campaign reporting</h2>
+            <p>Review scans, last activity, payout setup, and campaign routing in one place.</p>
           </div>
           <div className="panel-actions">
-            <button className="refresh-button data-refresh" type="button" onClick={loadMerchants}>
+            <button className="refresh-button data-refresh" type="button" onClick={onRefresh}>
               <RefreshCw size={18} />
               Refresh
+            </button>
+            <button className="refresh-button" type="button" onClick={onExport}>
+              <Download size={18} />
+              Export CSV
             </button>
             {isLoading && <span className="loading">Loading</span>}
           </div>
         </div>
-        <MerchantTable merchants={merchants} onEdit={setEditingMerchant} onChanged={loadMerchants} />
+
+        {merchants.length === 0 ? (
+          <div className="empty-state">
+            <BarChart3 size={32} />
+            <h2>No reporting data yet</h2>
+            <p>Create a QR code and scan activity will appear here.</p>
+          </div>
+        ) : (
+          <div className="report-table">
+            <div className="report-row report-head">
+              <span>Merchant</span>
+              <span>Campaign</span>
+              <span>Mode</span>
+              <span>Scans</span>
+              <span>Payout</span>
+              <span>Last scan</span>
+            </div>
+            {merchants.map((merchant) => (
+              <div className="report-row" key={merchant.id}>
+                <strong data-label="Merchant">{merchant.name}</strong>
+                <span data-label="Campaign">{merchant.campaign}</span>
+                <span data-label="Mode">{merchant.destination_type === "appsflyer" ? "Branch link" : "Normal link"}</span>
+                <strong data-label="Scans">{merchant.scans}</strong>
+                <span data-label="Payout">
+                  {merchant.payout_amount && merchant.payout_currency
+                    ? `${merchant.payout_currency} ${merchant.payout_amount} / download`
+                    : "Not set"}
+                </span>
+                <span data-label="Last scan">
+                  {merchant.last_scan_at
+                    ? new Date(merchant.last_scan_at).toLocaleString()
+                    : "No scans yet"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
-    </main>
+    </>
   );
 }
 

@@ -84,7 +84,7 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
     }
 
     if (form.destinationType === "appsflyer" && !hasAppsFlyer) {
-      setError("Attribution link is required for tracking mode.");
+      setError("Branch attribution link is required for tracking mode.");
       return;
     }
 
@@ -182,7 +182,7 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
             className={form.destinationType === "appsflyer" ? "selected" : ""}
             onClick={() => updateField("destinationType", "appsflyer")}
           >
-            Attribution link
+            Branch link
           </button>
         </div>
       </div>
@@ -220,16 +220,16 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
       ) : (
         <>
           <div className="wide">
-            <label htmlFor="appsflyer-url">Attribution link</label>
+            <label htmlFor="appsflyer-url">Branch attribution link</label>
             <input
               id="appsflyer-url"
               value={form.appsflyerUrl}
               onChange={(event) => updateField("appsflyerUrl", event.target.value)}
-              placeholder="https://company.onelink.me/abcd"
+              placeholder="https://yourbrand.app.link/abcd"
             />
           </div>
           <div>
-            <label htmlFor="appsflyer-pid">Partner/source ID</label>
+            <label htmlFor="appsflyer-pid">Branch channel/source</label>
             <input
               id="appsflyer-pid"
               value={form.appsflyerPid}
