@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { Copy, ExternalLink, QrCode } from "lucide-react";
-import type { MerchantWithStats } from "../lib/supabase";
-import { addTrackingParams, getQrUrl } from "../lib/url";
+import { Copy, Download, Edit, ExternalLink, QrCode, Trash2 } from "lucide-react";
+import type { Merchant, MerchantWithStats } from "../lib/supabase";
+import { deleteMerchant } from "../lib/api";
+import { getMerchantDestination, getQrUrl } from "../lib/url";
 
 type MerchantTableProps = {
   merchants: MerchantWithStats[];
+  onEdit: (merchant: Merchant) => void;
+  onChanged: () => void;
 };
 
-export function MerchantTable({ merchants }: MerchantTableProps) {
+export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTableProps) {
   const [qrImages, setQrImages] = useState<Record<string, string>>({});
+  const [deletingId, setDeletingId] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -47,6 +51,19 @@ export function MerchantTable({ merchants }: MerchantTableProps) {
     link.click();
   }
 
+  async function handleDelete(merchant: Merchant) {
+    const confirmed = window.confirm(`Delete ${merchant.name}? This also removes its scan history.`);
+    if (!confirmed) return;
+
+    setDeletingId(merchant.id);
+    try {
+      await deleteMerchant(merchant.id);
+      onChanged();
+    } finally {
+      setDeletingId("");
+    }
+  }
+
   if (merchants.length === 0) {
     return (
       <div className="empty-state">
@@ -61,7 +78,7 @@ export function MerchantTable({ merchants }: MerchantTableProps) {
     <div className="merchant-list">
       {merchants.map((merchant) => {
         const qrUrl = getQrUrl(merchant.slug);
-        const finalUrl = addTrackingParams(merchant.appsflyer_url, merchant.campaign, merchant.slug);
+        const finalUrl = getMerchantDestination(merchant, "desktop");
 
         return (
           <article className="merchant-row" key={merchant.id}>
@@ -71,6 +88,14 @@ export function MerchantTable({ merchants }: MerchantTableProps) {
               <div className="merchant-heading">
                 <h3>{merchant.name}</h3>
                 <span>{merchant.location || "No location"}</span>
+                <span className={merchant.is_active ? "status-pill active" : "status-pill"}>
+                  {merchant.is_active ? "Active" : "Paused"}
+                </span>
+              </div>
+              <div className="merchant-meta">
+                <span>{merchant.destination_type === "appsflyer" ? "AppsFlyer" : "Normal link"}</span>
+                <span>{merchant.app_name || "No app name"}</span>
+                <span>Campaign: {merchant.campaign}</span>
               </div>
               <p>{qrUrl}</p>
               <div className="merchant-actions">
@@ -79,18 +104,40 @@ export function MerchantTable({ merchants }: MerchantTableProps) {
                   Copy QR link
                 </button>
                 <button type="button" onClick={() => downloadQr(merchant.name, qrImages[merchant.id])}>
-                  <QrCode size={16} />
+                  <Download size={16} />
                   Download QR
+                </button>
+                <button type="button" onClick={() => onEdit(merchant)}>
+                  <Edit size={16} />
+                  Edit
                 </button>
                 <a href={qrUrl} target="_blank" rel="noreferrer">
                   <ExternalLink size={16} />
                   Test scan
                 </a>
-                <a href={finalUrl} target="_blank" rel="noreferrer">
-                  <ExternalLink size={16} />
-                  AppsFlyer URL
-                </a>
+                {finalUrl && (
+                  <a href={finalUrl} target="_blank" rel="noreferrer">
+                    <ExternalLink size={16} />
+                    Destination
+                  </a>
+                )}
+                <button
+                  className="danger-button"
+                  type="button"
+                  disabled={deletingId === merchant.id}
+                  onClick={() => handleDelete(merchant)}
+                >
+                  <Trash2 size={16} />
+                  Delete
+                </button>
               </div>
+              {merchant.notes && <p className="merchant-note">{merchant.notes}</p>}
+              {merchant.destination_type === "appsflyer" && (
+                <p className="merchant-note">
+                  AppsFlyer params: pid={merchant.appsflyer_pid || "from link"} c={merchant.campaign} af_sub1=
+                  {merchant.slug}
+                </p>
+              )}
             </div>
 
             <div className="merchant-stats">

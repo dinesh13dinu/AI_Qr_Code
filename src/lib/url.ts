@@ -1,3 +1,5 @@
+import type { Merchant } from "./supabase";
+
 export function toSlug(value: string) {
   return value
     .trim()
@@ -25,8 +27,12 @@ export function detectDevice(userAgent: string) {
   return "unknown";
 }
 
-export function addTrackingParams(baseUrl: string, campaign: string, merchantSlug: string) {
+export function addTrackingParams(baseUrl: string, campaign: string, merchantSlug: string, pid?: string | null) {
   const url = new URL(baseUrl);
+
+  if (pid && !url.searchParams.get("pid")) {
+    url.searchParams.set("pid", pid);
+  }
 
   if (!url.searchParams.get("c")) {
     url.searchParams.set("c", campaign);
@@ -37,4 +43,20 @@ export function addTrackingParams(baseUrl: string, campaign: string, merchantSlu
   }
 
   return url.toString();
+}
+
+export function getMerchantDestination(merchant: Merchant, deviceType: string) {
+  if (merchant.destination_type === "appsflyer" && merchant.appsflyer_url) {
+    return addTrackingParams(
+      merchant.appsflyer_url,
+      merchant.campaign,
+      merchant.slug,
+      merchant.appsflyer_pid,
+    );
+  }
+
+  if (deviceType === "ios" && merchant.ios_url) return merchant.ios_url;
+  if (deviceType === "android" && merchant.android_url) return merchant.android_url;
+
+  return merchant.fallback_url || merchant.ios_url || merchant.android_url || merchant.appsflyer_url || "";
 }

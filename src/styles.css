@@ -74,7 +74,8 @@ p {
 .merchant-actions button,
 .merchant-actions a,
 .merchant-form button,
-.redirect-card a {
+.redirect-card a,
+.login-card button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -93,6 +94,24 @@ p {
 
 .refresh-button {
   margin-top: 8px;
+}
+
+.topbar-actions,
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.secondary-button,
+.merchant-actions .danger-button {
+  background: #eef4ef;
+  color: #243429;
+}
+
+.merchant-actions .danger-button {
+  color: #8f2626;
 }
 
 .notice {
@@ -207,6 +226,40 @@ p {
   box-shadow: 0 0 0 3px rgba(61, 139, 101, 0.14);
 }
 
+.segmented-control {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  width: min(420px, 100%);
+  border: 1px solid #d8dfd6;
+  border-radius: 8px;
+  background: #eef4ef;
+  padding: 4px;
+}
+
+.merchant-form .segmented-control button {
+  min-height: 38px;
+  background: transparent;
+  color: #39443c;
+}
+
+.merchant-form .segmented-control button.selected {
+  background: #17211a;
+  color: #fff;
+}
+
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #404a42;
+  font-weight: 800;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
 .form-footer {
   display: flex;
   align-items: center;
@@ -260,10 +313,36 @@ p {
   font-size: 13px;
 }
 
+.merchant-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.merchant-meta span,
+.status-pill {
+  border-radius: 999px;
+  background: #eef4ef;
+  color: #4e5b50;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 8px;
+}
+
+.status-pill.active {
+  background: #dff5e6;
+  color: #176339;
+}
+
 .merchant-main p {
   margin-top: 8px;
   color: #526054;
   overflow-wrap: anywhere;
+}
+
+.merchant-note {
+  font-size: 13px;
 }
 
 .merchant-actions {
@@ -328,6 +407,53 @@ p {
   background: #f5f7f2;
 }
 
+.login-screen {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-card {
+  display: grid;
+  gap: 12px;
+  width: min(420px, 100%);
+  border: 1px solid #dfe5dc;
+  border-radius: 8px;
+  background: #fff;
+  padding: 28px;
+}
+
+.login-icon {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 8px;
+  background: #eef4ef;
+  color: #2d7b57;
+}
+
+.login-card h1 {
+  font-size: 34px;
+}
+
+.login-card label {
+  color: #404a42;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.login-card input {
+  width: 100%;
+  border: 1px solid #d8dfd6;
+  border-radius: 8px;
+  background: #fbfcfa;
+  color: #17211a;
+  outline: none;
+  padding: 12px 13px;
+}
+
 .redirect-card {
   width: min(460px, 100%);
   border: 1px solid #dfe5dc;
@@ -355,8 +481,10 @@ p {
 @media (max-width: 780px) {
   .topbar,
   .panel-heading,
+  .topbar-actions,
   .form-footer {
     display: grid;
+    justify-content: stretch;
   }
 
   .stats-strip,

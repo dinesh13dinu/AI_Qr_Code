@@ -14,8 +14,15 @@ export type Merchant = {
   name: string;
   slug: string;
   location: string | null;
-  appsflyer_url: string;
+  app_name: string | null;
+  destination_type: "direct" | "appsflyer";
+  ios_url: string | null;
+  android_url: string | null;
+  fallback_url: string | null;
+  appsflyer_url: string | null;
+  appsflyer_pid: string | null;
   campaign: string;
+  is_active: boolean;
   notes: string | null;
   created_at: string;
 };

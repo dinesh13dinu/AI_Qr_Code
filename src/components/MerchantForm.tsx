@@ -1,49 +1,118 @@
-import { FormEvent, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
-import { createMerchant } from "../lib/api";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Check, Plus } from "lucide-react";
+import { createMerchant, updateMerchant } from "../lib/api";
+import type { Merchant } from "../lib/supabase";
 import { toSlug } from "../lib/url";
 
 type MerchantFormProps = {
-  onCreated: () => void;
+  editingMerchant: Merchant | null;
+  onCancelEdit: () => void;
+  onSaved: () => void;
 };
 
-export function MerchantForm({ onCreated }: MerchantFormProps) {
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
-  const [appsflyerUrl, setAppsflyerUrl] = useState("");
-  const [notes, setNotes] = useState("");
+type DestinationType = "direct" | "appsflyer";
+
+const emptyForm = {
+  name: "",
+  location: "",
+  appName: "",
+  destinationType: "direct" as DestinationType,
+  iosUrl: "",
+  androidUrl: "",
+  fallbackUrl: "",
+  appsflyerUrl: "",
+  appsflyerPid: "",
+  campaign: "",
+  isActive: true,
+  notes: "",
+};
+
+export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: MerchantFormProps) {
+  const [form, setForm] = useState(emptyForm);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const slug = useMemo(() => toSlug(name), [name]);
+  const slug = useMemo(() => toSlug(form.name), [form.name]);
+  const campaign = form.campaign.trim() || slug;
+  const isEditing = Boolean(editingMerchant);
+
+  useEffect(() => {
+    if (!editingMerchant) {
+      setForm(emptyForm);
+      return;
+    }
+
+    setForm({
+      name: editingMerchant.name,
+      location: editingMerchant.location ?? "",
+      appName: editingMerchant.app_name ?? "",
+      destinationType: editingMerchant.destination_type,
+      iosUrl: editingMerchant.ios_url ?? "",
+      androidUrl: editingMerchant.android_url ?? "",
+      fallbackUrl: editingMerchant.fallback_url ?? "",
+      appsflyerUrl: editingMerchant.appsflyer_url ?? "",
+      appsflyerPid: editingMerchant.appsflyer_pid ?? "",
+      campaign: editingMerchant.campaign,
+      isActive: editingMerchant.is_active,
+      notes: editingMerchant.notes ?? "",
+    });
+  }, [editingMerchant]);
+
+  function updateField<Field extends keyof typeof form>(field: Field, value: (typeof form)[Field]) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError("");
 
-    if (!name.trim() || !slug || !appsflyerUrl.trim()) {
-      setError("Merchant name and AppsFlyer link are required.");
+    const hasDirectUrl = form.iosUrl.trim() || form.androidUrl.trim() || form.fallbackUrl.trim();
+    const hasAppsFlyer = form.appsflyerUrl.trim();
+
+    if (!form.name.trim() || !slug) {
+      setError("Merchant name is required.");
+      return;
+    }
+
+    if (form.destinationType === "direct" && !hasDirectUrl) {
+      setError("Add at least one iOS, Android, or fallback URL.");
+      return;
+    }
+
+    if (form.destinationType === "appsflyer" && !hasAppsFlyer) {
+      setError("AppsFlyer OneLink is required for AppsFlyer mode.");
       return;
     }
 
     try {
       setIsSaving(true);
-      await createMerchant({
-        name: name.trim(),
-        slug,
-        location: location.trim(),
-        appsflyerUrl: appsflyerUrl.trim(),
-        campaign: slug,
-        notes: notes.trim(),
-      });
 
-      setName("");
-      setLocation("");
-      setAppsflyerUrl("");
-      setNotes("");
-      onCreated();
+      const payload = {
+        name: form.name.trim(),
+        slug,
+        location: form.location.trim(),
+        appName: form.appName.trim(),
+        destinationType: form.destinationType,
+        iosUrl: form.iosUrl.trim(),
+        androidUrl: form.androidUrl.trim(),
+        fallbackUrl: form.fallbackUrl.trim(),
+        appsflyerUrl: form.appsflyerUrl.trim(),
+        appsflyerPid: form.appsflyerPid.trim(),
+        campaign,
+        isActive: form.isActive,
+        notes: form.notes.trim(),
+      };
+
+      if (editingMerchant) {
+        await updateMerchant({ ...payload, id: editingMerchant.id });
+      } else {
+        await createMerchant(payload);
+      }
+
+      setForm(emptyForm);
+      onSaved();
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Could not create merchant.";
+      const message = caught instanceof Error ? caught.message : "Could not save merchant.";
       setError(message);
     } finally {
       setIsSaving(false);
@@ -53,11 +122,11 @@ export function MerchantForm({ onCreated }: MerchantFormProps) {
   return (
     <form className="merchant-form" onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="merchant-name">Merchant name</label>
+        <label htmlFor="merchant-name">Merchant / affiliate name</label>
         <input
           id="merchant-name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
+          value={form.name}
+          onChange={(event) => updateField("name", event.target.value)}
           placeholder="Dinesh QR Partner"
         />
       </div>
@@ -66,38 +135,146 @@ export function MerchantForm({ onCreated }: MerchantFormProps) {
         <label htmlFor="merchant-location">Location</label>
         <input
           id="merchant-location"
-          value={location}
-          onChange={(event) => setLocation(event.target.value)}
+          value={form.location}
+          onChange={(event) => updateField("location", event.target.value)}
           placeholder="Dubai Mall"
         />
       </div>
 
-      <div className="wide">
-        <label htmlFor="appsflyer-url">AppsFlyer OneLink</label>
+      <div>
+        <label htmlFor="app-name">App / campaign name</label>
         <input
-          id="appsflyer-url"
-          value={appsflyerUrl}
-          onChange={(event) => setAppsflyerUrl(event.target.value)}
-          placeholder="https://company.onelink.me/abcd?pid=dinesh_qr"
+          id="app-name"
+          value={form.appName}
+          onChange={(event) => updateField("appName", event.target.value)}
+          placeholder="Client app name"
         />
       </div>
+
+      <div>
+        <label htmlFor="campaign">Tracking campaign</label>
+        <input
+          id="campaign"
+          value={form.campaign}
+          onChange={(event) => updateField("campaign", event.target.value)}
+          placeholder={slug || "merchant-id"}
+        />
+      </div>
+
+      <div className="wide">
+        <label>Destination type</label>
+        <div className="segmented-control">
+          <button
+            type="button"
+            className={form.destinationType === "direct" ? "selected" : ""}
+            onClick={() => updateField("destinationType", "direct")}
+          >
+            Normal app/link
+          </button>
+          <button
+            type="button"
+            className={form.destinationType === "appsflyer" ? "selected" : ""}
+            onClick={() => updateField("destinationType", "appsflyer")}
+          >
+            AppsFlyer later
+          </button>
+        </div>
+      </div>
+
+      {form.destinationType === "direct" ? (
+        <>
+          <div>
+            <label htmlFor="ios-url">iOS App Store URL</label>
+            <input
+              id="ios-url"
+              value={form.iosUrl}
+              onChange={(event) => updateField("iosUrl", event.target.value)}
+              placeholder="https://apps.apple.com/app/..."
+            />
+          </div>
+          <div>
+            <label htmlFor="android-url">Android Play Store URL</label>
+            <input
+              id="android-url"
+              value={form.androidUrl}
+              onChange={(event) => updateField("androidUrl", event.target.value)}
+              placeholder="https://play.google.com/store/apps/details?id=..."
+            />
+          </div>
+          <div className="wide">
+            <label htmlFor="fallback-url">Fallback / website URL</label>
+            <input
+              id="fallback-url"
+              value={form.fallbackUrl}
+              onChange={(event) => updateField("fallbackUrl", event.target.value)}
+              placeholder="https://example.com"
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="wide">
+            <label htmlFor="appsflyer-url">AppsFlyer OneLink</label>
+            <input
+              id="appsflyer-url"
+              value={form.appsflyerUrl}
+              onChange={(event) => updateField("appsflyerUrl", event.target.value)}
+              placeholder="https://company.onelink.me/abcd"
+            />
+          </div>
+          <div>
+            <label htmlFor="appsflyer-pid">AppsFlyer PID</label>
+            <input
+              id="appsflyer-pid"
+              value={form.appsflyerPid}
+              onChange={(event) => updateField("appsflyerPid", event.target.value)}
+              placeholder="dinesh_qr"
+            />
+          </div>
+          <div>
+            <label htmlFor="appsflyer-fallback">Fallback URL</label>
+            <input
+              id="appsflyer-fallback"
+              value={form.fallbackUrl}
+              onChange={(event) => updateField("fallbackUrl", event.target.value)}
+              placeholder="Optional website URL"
+            />
+          </div>
+        </>
+      )}
 
       <div className="wide">
         <label htmlFor="notes">Notes</label>
         <textarea
           id="notes"
-          value={notes}
-          onChange={(event) => setNotes(event.target.value)}
-          placeholder="Contact person, payout details, placement notes"
+          value={form.notes}
+          onChange={(event) => updateField("notes", event.target.value)}
+          placeholder="Contact person, placement notes, campaign details"
         />
       </div>
 
+      <label className="checkbox-row wide">
+        <input
+          type="checkbox"
+          checked={form.isActive}
+          onChange={(event) => updateField("isActive", event.target.checked)}
+        />
+        QR link is active
+      </label>
+
       <div className="form-footer wide">
         <span className="slug-preview">QR path: /m/{slug || "merchant-name"}</span>
-        <button type="submit" disabled={isSaving}>
-          <Plus size={18} />
-          {isSaving ? "Creating" : "Create QR"}
-        </button>
+        <div className="button-row">
+          {isEditing && (
+            <button className="secondary-button" type="button" onClick={onCancelEdit}>
+              Cancel
+            </button>
+          )}
+          <button type="submit" disabled={isSaving}>
+            {isEditing ? <Check size={18} /> : <Plus size={18} />}
+            {isSaving ? "Saving" : isEditing ? "Save changes" : "Create QR"}
+          </button>
+        </div>
       </div>
 
       {error && <p className="form-error wide">{error}</p>}

@@ -2,11 +2,19 @@ import { supabase } from "./supabase";
 import type { Merchant, MerchantWithStats } from "./supabase";
 
 type CreateMerchantInput = {
+  id?: string;
   name: string;
   slug: string;
   location: string;
+  appName: string;
+  destinationType: "direct" | "appsflyer";
+  iosUrl: string;
+  androidUrl: string;
+  fallbackUrl: string;
   appsflyerUrl: string;
+  appsflyerPid: string;
   campaign: string;
+  isActive: boolean;
   notes: string;
 };
 
@@ -47,8 +55,15 @@ export async function createMerchant(input: CreateMerchantInput) {
       name: input.name,
       slug: input.slug,
       location: input.location || null,
-      appsflyer_url: input.appsflyerUrl,
+      app_name: input.appName || null,
+      destination_type: input.destinationType,
+      ios_url: input.iosUrl || null,
+      android_url: input.androidUrl || null,
+      fallback_url: input.fallbackUrl || null,
+      appsflyer_url: input.appsflyerUrl || null,
+      appsflyer_pid: input.appsflyerPid || null,
       campaign: input.campaign,
+      is_active: input.isActive,
       notes: input.notes || null,
     })
     .select("*")
@@ -58,6 +73,42 @@ export async function createMerchant(input: CreateMerchantInput) {
   return data as Merchant;
 }
 
+export async function updateMerchant(input: CreateMerchantInput & { id: string }) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+
+  const { data, error } = await supabase
+    .from("merchants")
+    .update({
+      name: input.name,
+      slug: input.slug,
+      location: input.location || null,
+      app_name: input.appName || null,
+      destination_type: input.destinationType,
+      ios_url: input.iosUrl || null,
+      android_url: input.androidUrl || null,
+      fallback_url: input.fallbackUrl || null,
+      appsflyer_url: input.appsflyerUrl || null,
+      appsflyer_pid: input.appsflyerPid || null,
+      campaign: input.campaign,
+      is_active: input.isActive,
+      notes: input.notes || null,
+    })
+    .eq("id", input.id)
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return data as Merchant;
+}
+
+export async function deleteMerchant(id: string) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+
+  const { error } = await supabase.from("merchants").delete().eq("id", id);
+
+  if (error) throw error;
+}
+
 export async function getMerchantBySlug(slug: string) {
   if (!supabase) return null;
 
@@ -65,6 +116,7 @@ export async function getMerchantBySlug(slug: string) {
     .from("merchants")
     .select("*")
     .eq("slug", slug)
+    .eq("is_active", true)
     .single();
 
   if (error) return null;

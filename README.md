@@ -25,4 +25,18 @@ Run the SQL in `supabase/schema.sql` inside Supabase SQL Editor.
 2. Paste the company AppsFlyer OneLink.
 3. The app generates a public QR URL: `/m/merchant-name`.
 4. When someone opens it, the scan is logged.
-5. The visitor is redirected to AppsFlyer with merchant tracking parameters.
+5. The visitor is redirected to the saved destination.
+
+## Login
+
+The first dashboard gate is:
+
+```text
+Username: Dinesh
+Password: 654123
+```
+
+## Destination modes
+
+- Normal app/link: use App Store URL, Play Store URL, or a fallback website URL.
+- AppsFlyer later: paste OneLink and optional PID when the company provides them.
