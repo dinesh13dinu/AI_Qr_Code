@@ -22,6 +22,8 @@ export type Merchant = {
   appsflyer_url: string | null;
   appsflyer_pid: string | null;
   campaign: string;
+  payout_amount: number | null;
+  payout_currency: "AED" | "USD" | null;
   is_active: boolean;
   notes: string | null;
   created_at: string;

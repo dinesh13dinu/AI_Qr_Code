@@ -48,6 +48,7 @@ function Dashboard() {
         "Campaign",
         "QR Link",
         "Scans",
+        "Payout",
         "Last Scan",
         "Active",
       ],
@@ -59,6 +60,9 @@ function Dashboard() {
         merchant.campaign,
         `${window.location.origin}/m/${merchant.slug}`,
         String(merchant.scans),
+        merchant.payout_amount && merchant.payout_currency
+          ? `${merchant.payout_currency} ${merchant.payout_amount} per download`
+          : "",
         merchant.last_scan_at ? new Date(merchant.last_scan_at).toLocaleString() : "",
         merchant.is_active ? "yes" : "no",
       ]),

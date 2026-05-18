@@ -36,7 +36,8 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -269,6 +270,7 @@ button {
 
 .merchant-form input,
 .merchant-form textarea,
+.merchant-form select,
 .login-card input {
   width: 100%;
   border: 0;
@@ -293,10 +295,17 @@ button {
 
 .merchant-form input:focus,
 .merchant-form textarea:focus,
+.merchant-form select:focus,
 .login-card input:focus {
   box-shadow:
     var(--pressed),
     0 0 0 2px rgba(255, 87, 93, 0.42);
+}
+
+.payout-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px;
+  gap: 14px;
 }
 
 .segmented-control {
@@ -664,9 +673,14 @@ button {
 
   .merchant-form input,
   .merchant-form textarea,
+  .merchant-form select,
   .login-card input {
     min-height: 52px;
     font-size: 16px;
+  }
+
+  .payout-row {
+    grid-template-columns: 1fr;
   }
 
   .segmented-control {

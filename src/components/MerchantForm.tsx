@@ -23,6 +23,8 @@ const emptyForm = {
   appsflyerUrl: "",
   appsflyerPid: "",
   campaign: "",
+  payoutAmount: "",
+  payoutCurrency: "AED" as "AED" | "USD",
   isActive: true,
   notes: "",
 };
@@ -53,6 +55,8 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
       appsflyerUrl: editingMerchant.appsflyer_url ?? "",
       appsflyerPid: editingMerchant.appsflyer_pid ?? "",
       campaign: editingMerchant.campaign,
+      payoutAmount: editingMerchant.payout_amount ? String(editingMerchant.payout_amount) : "",
+      payoutCurrency: editingMerchant.payout_currency ?? "AED",
       isActive: editingMerchant.is_active,
       notes: editingMerchant.notes ?? "",
     });
@@ -99,6 +103,8 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
         appsflyerUrl: form.appsflyerUrl.trim(),
         appsflyerPid: form.appsflyerPid.trim(),
         campaign,
+        payoutAmount: form.payoutAmount.trim(),
+        payoutCurrency: form.payoutCurrency,
         isActive: form.isActive,
         notes: form.notes.trim(),
       };
@@ -127,7 +133,7 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           id="merchant-name"
           value={form.name}
           onChange={(event) => updateField("name", event.target.value)}
-          placeholder="Dinesh QR Partner"
+          placeholder="Partner QR Merchant"
         />
       </div>
 
@@ -242,6 +248,29 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           </div>
         </>
       )}
+
+      <div className="wide">
+        <label>Payout per confirmed download</label>
+        <div className="payout-row">
+          <input
+            id="payout-amount"
+            type="number"
+            min="0"
+            step="0.01"
+            value={form.payoutAmount}
+            onChange={(event) => updateField("payoutAmount", event.target.value)}
+            placeholder="1.00"
+          />
+          <select
+            aria-label="Payout currency"
+            value={form.payoutCurrency}
+            onChange={(event) => updateField("payoutCurrency", event.target.value as "AED" | "USD")}
+          >
+            <option value="AED">AED</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+      </div>
 
       <div className="wide">
         <label htmlFor="notes">Notes</label>

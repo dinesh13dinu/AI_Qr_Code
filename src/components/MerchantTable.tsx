@@ -96,6 +96,12 @@ export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTablePro
                 <span>{merchant.destination_type === "appsflyer" ? "AppsFlyer" : "Normal link"}</span>
                 <span>{merchant.app_name || "No app name"}</span>
                 <span>Campaign: {merchant.campaign}</span>
+                <span>
+                  Payout:{" "}
+                  {merchant.payout_amount && merchant.payout_currency
+                    ? `${merchant.payout_currency} ${merchant.payout_amount} / download`
+                    : "Not set"}
+                </span>
               </div>
               <p>{qrUrl}</p>
               <div className="merchant-actions">

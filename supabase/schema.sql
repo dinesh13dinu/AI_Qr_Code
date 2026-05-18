@@ -13,6 +13,8 @@ create table if not exists public.merchants (
   appsflyer_url text,
   appsflyer_pid text,
   campaign text not null,
+  payout_amount numeric(10, 2),
+  payout_currency text,
   is_active boolean not null default true,
   notes text,
   created_at timestamptz not null default now()
@@ -24,6 +26,8 @@ alter table public.merchants add column if not exists ios_url text;
 alter table public.merchants add column if not exists android_url text;
 alter table public.merchants add column if not exists fallback_url text;
 alter table public.merchants add column if not exists appsflyer_pid text;
+alter table public.merchants add column if not exists payout_amount numeric(10, 2);
+alter table public.merchants add column if not exists payout_currency text;
 alter table public.merchants add column if not exists is_active boolean not null default true;
 alter table public.merchants alter column appsflyer_url drop not null;
 

@@ -14,6 +14,8 @@ type CreateMerchantInput = {
   appsflyerUrl: string;
   appsflyerPid: string;
   campaign: string;
+  payoutAmount: string;
+  payoutCurrency: "AED" | "USD";
   isActive: boolean;
   notes: string;
 };
@@ -63,6 +65,8 @@ export async function createMerchant(input: CreateMerchantInput) {
       appsflyer_url: input.appsflyerUrl || null,
       appsflyer_pid: input.appsflyerPid || null,
       campaign: input.campaign,
+      payout_amount: input.payoutAmount ? Number(input.payoutAmount) : null,
+      payout_currency: input.payoutAmount ? input.payoutCurrency : null,
       is_active: input.isActive,
       notes: input.notes || null,
     })
@@ -90,6 +94,8 @@ export async function updateMerchant(input: CreateMerchantInput & { id: string }
       appsflyer_url: input.appsflyerUrl || null,
       appsflyer_pid: input.appsflyerPid || null,
       campaign: input.campaign,
+      payout_amount: input.payoutAmount ? Number(input.payoutAmount) : null,
+      payout_currency: input.payoutAmount ? input.payoutCurrency : null,
       is_active: input.isActive,
       notes: input.notes || null,
     })
