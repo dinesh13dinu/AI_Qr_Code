@@ -83,18 +83,14 @@ function Dashboard() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <span className="eyebrow">QR referral engine</span>
-          <h1>Merchant QR dashboard</h1>
-          <p>Create merchant QR codes, track scans, and redirect each customer to a normal app link now or AppsFlyer later.</p>
+          <span className="eyebrow">QR campaign platform</span>
+          <h1>Campaign QR dashboard</h1>
+          <p>Create branded QR links, manage partners, and track every scan from one simple dashboard.</p>
         </div>
         <div className="topbar-actions">
           <button className="refresh-button" type="button" onClick={exportCsv}>
             <Download size={18} />
             Export CSV
-          </button>
-          <button className="refresh-button" type="button" onClick={loadMerchants}>
-            <RefreshCw size={18} />
-            Refresh
           </button>
           <button className="refresh-button secondary-button" type="button" onClick={logout}>
             <LogOut size={18} />
@@ -117,7 +113,7 @@ function Dashboard() {
         <div className="panel-heading">
           <div>
             <h2>{editingMerchant ? "Edit merchant QR" : "Create merchant QR"}</h2>
-            <p>Add normal app/store links today. Switch to AppsFlyer when the company gives you OneLink details.</p>
+            <p>Add a direct link today, or switch to an attribution link when the client provides one.</p>
           </div>
         </div>
         <MerchantForm
@@ -136,7 +132,13 @@ function Dashboard() {
             <h2>Merchant QR codes</h2>
             <p>Each QR logs a scan first, then forwards to the saved destination.</p>
           </div>
-          {isLoading && <span className="loading">Loading</span>}
+          <div className="panel-actions">
+            <button className="refresh-button data-refresh" type="button" onClick={loadMerchants}>
+              <RefreshCw size={18} />
+              Refresh
+            </button>
+            {isLoading && <span className="loading">Loading</span>}
+          </div>
         </div>
         <MerchantTable merchants={merchants} onEdit={setEditingMerchant} onChanged={loadMerchants} />
       </section>

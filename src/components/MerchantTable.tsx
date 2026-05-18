@@ -93,7 +93,7 @@ export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTablePro
                 </span>
               </div>
               <div className="merchant-meta">
-                <span>{merchant.destination_type === "appsflyer" ? "AppsFlyer" : "Normal link"}</span>
+                <span>{merchant.destination_type === "appsflyer" ? "Attribution link" : "Normal link"}</span>
                 <span>{merchant.app_name || "No app name"}</span>
                 <span>Campaign: {merchant.campaign}</span>
                 <span>
@@ -140,7 +140,7 @@ export function MerchantTable({ merchants, onEdit, onChanged }: MerchantTablePro
               {merchant.notes && <p className="merchant-note">{merchant.notes}</p>}
               {merchant.destination_type === "appsflyer" && (
                 <p className="merchant-note">
-                  AppsFlyer params: pid={merchant.appsflyer_pid || "from link"} c={merchant.campaign} af_sub1=
+                  Tracking params: source={merchant.appsflyer_pid || "from link"} campaign={merchant.campaign} partner=
                   {merchant.slug}
                 </p>
               )}

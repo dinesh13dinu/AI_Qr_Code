@@ -84,7 +84,7 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
     }
 
     if (form.destinationType === "appsflyer" && !hasAppsFlyer) {
-      setError("AppsFlyer OneLink is required for AppsFlyer mode.");
+      setError("Attribution link is required for tracking mode.");
       return;
     }
 
@@ -182,7 +182,7 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
             className={form.destinationType === "appsflyer" ? "selected" : ""}
             onClick={() => updateField("destinationType", "appsflyer")}
           >
-            AppsFlyer later
+            Attribution link
           </button>
         </div>
       </div>
@@ -220,7 +220,7 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
       ) : (
         <>
           <div className="wide">
-            <label htmlFor="appsflyer-url">AppsFlyer OneLink</label>
+            <label htmlFor="appsflyer-url">Attribution link</label>
             <input
               id="appsflyer-url"
               value={form.appsflyerUrl}
@@ -229,12 +229,12 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
             />
           </div>
           <div>
-            <label htmlFor="appsflyer-pid">AppsFlyer PID</label>
+            <label htmlFor="appsflyer-pid">Partner/source ID</label>
             <input
               id="appsflyer-pid"
               value={form.appsflyerPid}
               onChange={(event) => updateField("appsflyerPid", event.target.value)}
-              placeholder="dinesh_qr"
+              placeholder="partner_qr"
             />
           </div>
           <div>

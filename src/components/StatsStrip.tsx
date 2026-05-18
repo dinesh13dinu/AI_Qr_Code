@@ -23,8 +23,8 @@ export function StatsStrip({ merchants }: StatsStripProps) {
         <strong>{activeMerchants}</strong>
       </div>
       <div>
-        <span>Install tracking</span>
-        <strong>AppsFlyer</strong>
+        <span>Link modes</span>
+        <strong>2</strong>
       </div>
     </section>
   );

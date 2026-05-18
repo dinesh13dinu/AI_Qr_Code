@@ -32,7 +32,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         <div className="login-icon">
           <LockKeyhole size={28} />
         </div>
-        <span className="eyebrow">QR referral engine</span>
+        <span className="eyebrow">QR campaign platform</span>
         <h1>Admin login</h1>
         <label htmlFor="admin-username">Username</label>
         <input
