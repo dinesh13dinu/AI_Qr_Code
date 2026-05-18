@@ -247,6 +247,39 @@ button {
   box-shadow: 0 10px 24px rgba(109, 40, 217, 0.18);
 }
 
+.report-switch {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  width: min(520px, 100%);
+  margin-bottom: 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f8f5ff;
+  padding: 5px;
+}
+
+.report-switch button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #5f5870;
+  cursor: pointer;
+  padding: 0 16px;
+  font-weight: 900;
+}
+
+.report-switch button.selected {
+  background: linear-gradient(100deg, var(--orange), var(--red));
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(109, 40, 217, 0.16);
+}
+
 .secondary-button,
 .topbar-actions .secondary-button,
 .merchant-actions .danger-button {
@@ -612,6 +645,11 @@ button {
   border-radius: 22px;
 }
 
+.report-qr-panel {
+  display: grid;
+  gap: 16px;
+}
+
 .report-row {
   display: grid;
   grid-template-columns: 1.2fr 1fr 0.9fr 0.55fr 1fr 1.2fr;
@@ -782,10 +820,16 @@ button {
     border-radius: 18px;
   }
 
-  .page-tabs button {
+  .page-tabs button,
+  .report-switch button {
     justify-content: center;
     min-height: 44px;
     padding: 0 10px;
+  }
+
+  .report-switch {
+    width: 100%;
+    border-radius: 18px;
   }
 
   .stats-strip {

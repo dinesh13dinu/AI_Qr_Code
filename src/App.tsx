@@ -156,7 +156,16 @@ function Dashboard() {
           </section>
         </>
       ) : (
-        <ReportingPage merchants={merchants} isLoading={isLoading} onRefresh={loadMerchants} onExport={exportCsv} />
+        <ReportingPage
+          merchants={merchants}
+          isLoading={isLoading}
+          onRefresh={loadMerchants}
+          onExport={exportCsv}
+          onEdit={(merchant) => {
+            setEditingMerchant(merchant);
+            setActivePage("qr");
+          }}
+        />
       )}
     </main>
   );
@@ -167,9 +176,12 @@ type ReportingPageProps = {
   isLoading: boolean;
   onRefresh: () => void;
   onExport: () => void;
+  onEdit: (merchant: Merchant) => void;
 };
 
-function ReportingPage({ merchants, isLoading, onRefresh, onExport }: ReportingPageProps) {
+function ReportingPage({ merchants, isLoading, onRefresh, onExport, onEdit }: ReportingPageProps) {
+  const [reportView, setReportView] = useState<"campaign" | "qr">("campaign");
+
   return (
     <>
       <StatsStrip merchants={merchants} />
@@ -193,40 +205,67 @@ function ReportingPage({ merchants, isLoading, onRefresh, onExport }: ReportingP
           </div>
         </div>
 
-        {merchants.length === 0 ? (
-          <div className="empty-state">
-            <BarChart3 size={32} />
-            <h2>No reporting data yet</h2>
-            <p>Create a QR code and scan activity will appear here.</p>
-          </div>
-        ) : (
-          <div className="report-table">
-            <div className="report-row report-head">
-              <span>Merchant</span>
-              <span>Campaign</span>
-              <span>Mode</span>
-              <span>Scans</span>
-              <span>Payout</span>
-              <span>Last scan</span>
+        <div className="report-switch" aria-label="Reporting sections">
+          <button
+            className={reportView === "campaign" ? "selected" : ""}
+            type="button"
+            onClick={() => setReportView("campaign")}
+          >
+            <BarChart3 size={18} />
+            Campaign reporting
+          </button>
+          <button
+            className={reportView === "qr" ? "selected" : ""}
+            type="button"
+            onClick={() => setReportView("qr")}
+          >
+            <QrCode size={18} />
+            Merchant QR codes
+          </button>
+        </div>
+
+        {reportView === "campaign" ? (
+          merchants.length === 0 ? (
+            <div className="empty-state">
+              <BarChart3 size={32} />
+              <h2>No reporting data yet</h2>
+              <p>Create a QR code and scan activity will appear here.</p>
             </div>
-            {merchants.map((merchant) => (
-              <div className="report-row" key={merchant.id}>
-                <strong data-label="Merchant">{merchant.name}</strong>
-                <span data-label="Campaign">{merchant.campaign}</span>
-                <span data-label="Mode">{merchant.destination_type === "appsflyer" ? "Branch link" : "Normal link"}</span>
-                <strong data-label="Scans">{merchant.scans}</strong>
-                <span data-label="Payout">
-                  {merchant.payout_amount && merchant.payout_currency
-                    ? `${merchant.payout_currency} ${merchant.payout_amount} / download`
-                    : "Not set"}
-                </span>
-                <span data-label="Last scan">
-                  {merchant.last_scan_at
-                    ? new Date(merchant.last_scan_at).toLocaleString()
-                    : "No scans yet"}
-                </span>
+          ) : (
+            <div className="report-table">
+              <div className="report-row report-head">
+                <span>Merchant</span>
+                <span>Campaign</span>
+                <span>Mode</span>
+                <span>Scans</span>
+                <span>Payout</span>
+                <span>Last scan</span>
               </div>
-            ))}
+              {merchants.map((merchant) => (
+                <div className="report-row" key={merchant.id}>
+                  <strong data-label="Merchant">{merchant.name}</strong>
+                  <span data-label="Campaign">{merchant.campaign}</span>
+                  <span data-label="Mode">
+                    {merchant.destination_type === "appsflyer" ? "Branch link" : "Normal link"}
+                  </span>
+                  <strong data-label="Scans">{merchant.scans}</strong>
+                  <span data-label="Payout">
+                    {merchant.payout_amount && merchant.payout_currency
+                      ? `${merchant.payout_currency} ${merchant.payout_amount} / download`
+                      : "Not set"}
+                  </span>
+                  <span data-label="Last scan">
+                    {merchant.last_scan_at
+                      ? new Date(merchant.last_scan_at).toLocaleString()
+                      : "No scans yet"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          <div className="report-qr-panel">
+            <MerchantTable merchants={merchants} onEdit={onEdit} onChanged={onRefresh} />
           </div>
         )}
       </section>
