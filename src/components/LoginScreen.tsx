@@ -1,4 +1,6 @@
 import { FormEvent, useState } from "react";
+import euphoriaLogo from "../assets/euphoria-logo.svg";
+
 type LoginScreenProps = {
   onLogin: () => void;
 };
@@ -28,16 +30,8 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     <main className="login-screen">
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="brand-lockup login-brand">
-          <div className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-          <div>
-            <strong>Euphoria.QR</strong>
-            <span>Partner QR platform</span>
-          </div>
+          <img src={euphoriaLogo} alt="Euphoria" />
+          <span>QR</span>
         </div>
         <h1>Admin login</h1>
         <label htmlFor="admin-username">Username</label>

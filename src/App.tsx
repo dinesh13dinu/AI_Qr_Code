@@ -7,6 +7,7 @@ import { StatsStrip } from "./components/StatsStrip";
 import { getMerchantBySlug, listMerchants, logScan } from "./lib/api";
 import { isSupabaseReady, type Merchant, type MerchantWithStats } from "./lib/supabase";
 import { detectDevice, getMerchantDestination } from "./lib/url";
+import euphoriaLogo from "./assets/euphoria-logo.svg";
 import "./styles.css";
 
 function Dashboard() {
@@ -94,16 +95,8 @@ function Dashboard() {
     <main className="app-shell">
       <header className="topbar">
         <div className="brand-lockup">
-          <div className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-          <div>
-            <strong>Euphoria.QR</strong>
-            <span>Partner QR platform</span>
-          </div>
+          <img src={euphoriaLogo} alt="Euphoria" />
+          <span>QR</span>
         </div>
         <div className="topbar-actions">
           <button className="refresh-button secondary-button" type="button" onClick={logout}>
