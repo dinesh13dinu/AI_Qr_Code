@@ -5,7 +5,7 @@ type LoginScreenProps = {
   onLogin: () => void;
 };
 
-const ADMIN_USERNAME = "Dinesh";
+const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "654123";
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
@@ -39,7 +39,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
-          placeholder="Dinesh"
+          placeholder="admin"
         />
         <label htmlFor="admin-password">Password</label>
         <input
