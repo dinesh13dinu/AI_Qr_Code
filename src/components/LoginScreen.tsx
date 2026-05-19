@@ -31,7 +31,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="brand-lockup login-brand">
           <img src={euphoriaLogo} alt="Euphoria" />
-          <span>QR</span>
         </div>
         <h1>Admin login</h1>
         <label htmlFor="admin-username">Username</label>

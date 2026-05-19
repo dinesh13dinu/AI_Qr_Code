@@ -96,7 +96,6 @@ function Dashboard() {
       <header className="topbar">
         <div className="brand-lockup">
           <img src={euphoriaLogo} alt="Euphoria" />
-          <span>QR</span>
         </div>
         <div className="topbar-actions">
           <button className="refresh-button secondary-button" type="button" onClick={logout}>
