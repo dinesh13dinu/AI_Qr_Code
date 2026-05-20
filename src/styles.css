@@ -793,22 +793,26 @@ button {
 }
 
 @media (max-width: 780px) {
+  body {
+    background: #f8f5ff;
+  }
+
   .app-shell {
     width: 100%;
-    max-width: 430px;
-    min-height: 100vh;
+    max-width: 440px;
+    min-height: 100dvh;
     margin: 0 auto;
-    padding: 0 0 28px;
+    padding: 10px 0 calc(96px + env(safe-area-inset-bottom));
     background: #fff;
   }
 
   .topbar {
     display: grid;
-    min-height: 104px;
+    min-height: 88px;
     gap: 18px;
-    margin: 0 14px 16px;
-    border-radius: 24px;
-    padding: 20px;
+    margin: 0 12px 12px;
+    border-radius: 22px;
+    padding: 14px 16px;
   }
 
   .topbar::before {
@@ -826,24 +830,25 @@ button {
   }
 
   .brand-lockup {
-    width: min(270px, 100%);
-    padding: 10px 16px;
+    width: min(232px, calc(100% - 82px));
+    min-height: 56px;
+    padding: 9px 14px;
+    border-radius: 16px;
   }
 
   .brand-lockup img {
-    width: min(205px, 76%);
+    width: min(184px, 84%);
   }
 
   .topbar-actions {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 9px;
-    right: 22px;
+    right: 14px;
+    gap: 0;
   }
 
   .topbar-actions .refresh-button {
+    width: 46px;
     min-height: 46px;
-    padding: 0 10px;
+    padding: 0;
     font-size: 0;
   }
 
@@ -853,7 +858,6 @@ button {
   }
 
   .notice,
-  .page-tabs,
   .stats-strip,
   .panel {
     width: calc(100% - 28px);
@@ -867,16 +871,39 @@ button {
   }
 
   .page-tabs {
+    position: fixed;
+    right: max(10px, calc((100vw - 440px) / 2 + 10px));
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: max(10px, calc((100vw - 440px) / 2 + 10px));
+    z-index: 20;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
-    border-radius: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+    width: auto;
+    margin: 0;
+    border-radius: 22px;
+    background: rgba(248, 245, 255, 0.94);
+    box-shadow: 0 18px 38px rgba(55, 37, 94, 0.18);
+    backdrop-filter: blur(18px);
   }
 
   .page-tabs button,
   .report-switch button {
     justify-content: center;
-    min-height: 44px;
-    padding: 0 10px;
+    min-height: 48px;
+    padding: 0 8px;
+    font-size: 13px;
+  }
+
+  .page-tabs button {
+    display: grid;
+    gap: 3px;
+    line-height: 1.1;
+  }
+
+  .page-tabs button svg {
+    justify-self: center;
+    width: 17px;
+    height: 17px;
   }
 
   .report-switch {
@@ -886,23 +913,25 @@ button {
 
   .stats-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
   .stats-strip div {
-    min-height: 98px;
-    border-radius: 20px;
-    padding: 16px;
+    min-height: 86px;
+    border-radius: 18px;
+    padding: 14px;
   }
 
   .stats-strip strong {
-    font-size: 27px;
+    font-size: 25px;
   }
 
   .panel {
-    margin-top: 16px;
-    border-radius: 22px;
-    padding: 20px 16px;
+    margin-top: 12px;
+    border-radius: 20px;
+    padding: 18px 14px;
+    box-shadow: 0 12px 34px rgba(55, 37, 94, 0.06);
   }
 
   .panel-heading,
@@ -922,11 +951,11 @@ button {
   }
 
   .panel-heading h2 {
-    font-size: 20px;
+    font-size: 19px;
   }
 
   .panel-heading p {
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.45;
   }
 
@@ -943,8 +972,9 @@ button {
   .merchant-form textarea,
   .merchant-form select,
   .login-card input {
-    min-height: 52px;
+    min-height: 50px;
     font-size: 16px;
+    border-radius: 14px;
   }
 
   .payout-row {
@@ -958,7 +988,7 @@ button {
   .button-row,
   .merchant-actions {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: stretch;
   }
 
@@ -966,14 +996,14 @@ button {
   .merchant-actions button,
   .merchant-actions a {
     width: 100%;
-    min-height: 46px;
+    min-height: 44px;
   }
 
   .merchant-row {
     grid-template-columns: 1fr;
-    gap: 16px;
-    border-radius: 22px;
-    padding: 16px;
+    gap: 14px;
+    border-radius: 20px;
+    padding: 14px;
   }
 
   .merchant-row.without-stats {
@@ -981,8 +1011,8 @@ button {
   }
 
   .qr-image {
-    width: 132px;
-    height: 132px;
+    width: 128px;
+    height: 128px;
     justify-self: center;
   }
 
@@ -994,11 +1024,12 @@ button {
 
   .merchant-meta {
     justify-content: center;
+    gap: 6px;
   }
 
   .merchant-main p {
     text-align: center;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .merchant-stats {
@@ -1017,7 +1048,7 @@ button {
   .report-head {
     grid-template-columns: 1fr 1fr;
     gap: 8px 12px;
-    padding: 14px;
+    padding: 13px;
   }
 
   .report-head {
@@ -1030,6 +1061,8 @@ button {
 
   .access-card {
     grid-template-columns: 42px 1fr;
+    border-radius: 18px;
+    padding: 12px;
   }
 
   .access-card strong {
@@ -1051,16 +1084,31 @@ button {
 
   .login-screen,
   .redirect-screen {
-    align-items: start;
+    align-items: center;
     padding: 18px 14px;
+    background: #fff;
   }
 
   .login-card,
   .redirect-card {
     width: 100%;
     max-width: 402px;
-    margin-top: 40px;
+    margin-top: 0;
     border-radius: 24px;
     padding: 28px 22px;
+  }
+}
+
+@media (max-width: 380px) {
+  .page-tabs {
+    grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+  }
+
+  .page-tabs button {
+    font-size: 12px;
+  }
+
+  .merchant-actions {
+    grid-template-columns: 1fr;
   }
 }
