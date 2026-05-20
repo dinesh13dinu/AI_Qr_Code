@@ -26,7 +26,7 @@ function Dashboard() {
     try {
       setMerchants(await listMerchants());
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Could not load merchants.";
+      const message = getErrorMessage(caught, "Could not load merchants.");
       setError(message);
     } finally {
       setIsLoading(false);
@@ -384,6 +384,14 @@ function getStoredUser() {
   } catch {
     return null;
   }
+}
+
+function getErrorMessage(caught: unknown, fallback: string) {
+  if (caught instanceof Error) return caught.message;
+  if (caught && typeof caught === "object" && "message" in caught) {
+    return String((caught as { message?: unknown }).message || fallback);
+  }
+  return fallback;
 }
 
 export default App;
