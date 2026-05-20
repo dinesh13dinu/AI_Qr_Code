@@ -5,7 +5,7 @@ import { LoginScreen } from "./components/LoginScreen";
 import { MerchantForm } from "./components/MerchantForm";
 import { MerchantTable } from "./components/MerchantTable";
 import { StatsStrip } from "./components/StatsStrip";
-import { getMerchantBySlug, listMerchants, logScan } from "./lib/api";
+import { getMerchantBySlug, listMerchants, logScan, logoutAccessUser } from "./lib/api";
 import { isSupabaseReady, type AccessUser, type Merchant, type MerchantWithStats } from "./lib/supabase";
 import { detectDevice, getMerchantDestination } from "./lib/url";
 import euphoriaLogo from "./assets/euphoria-logo.svg";
@@ -37,7 +37,8 @@ function Dashboard() {
     loadMerchants();
   }, []);
 
-  function logout() {
+  async function logout() {
+    await logoutAccessUser();
     window.localStorage.removeItem("ai_qr_admin_session");
     window.location.reload();
   }
@@ -373,7 +374,13 @@ function getStoredUser() {
   if (!rawSession || rawSession === "active") return null;
 
   try {
-    return JSON.parse(rawSession) as AccessUser;
+    const session = JSON.parse(rawSession) as AccessUser;
+    if (!session.session_token) return null;
+    if (session.session_expires_at && new Date(session.session_expires_at).getTime() <= Date.now()) {
+      window.localStorage.removeItem("ai_qr_admin_session");
+      return null;
+    }
+    return session;
   } catch {
     return null;
   }

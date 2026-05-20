@@ -50,4 +50,6 @@ export type AccessUser = {
   username: string;
   is_admin: boolean;
   created_at: string;
+  session_token?: string;
+  session_expires_at?: string;
 };

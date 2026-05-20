@@ -48,6 +48,11 @@ export function AccessPanel() {
       return;
     }
 
+    if (form.password.trim().length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
     try {
       setIsSaving(true);
       await createAccessUser({
@@ -109,9 +114,10 @@ export function AccessPanel() {
             <label htmlFor="access-password">Password</label>
             <input
               id="access-password"
-              type="text"
+              type="password"
               value={form.password}
               onChange={(event) => updateField("password", event.target.value)}
+              autoComplete="new-password"
               placeholder="Create password"
             />
           </div>

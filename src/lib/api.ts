@@ -28,29 +28,37 @@ type CreateAccessUserInput = {
 };
 
 export async function loginAccessUser(username: string, password: string): Promise<AccessUser | null> {
-  const fallbackUser = getFallbackAdmin(username, password);
-  if (!supabase) return fallbackUser;
+  if (!supabase) throw new Error("Supabase is not configured.");
+
+  const { data, error } = await supabase
+    .rpc("login_access_user", {
+      input_username: username,
+      input_password: password,
+    })
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data as AccessUser | null) ?? null;
+}
+
+export async function logoutAccessUser() {
+  if (!supabase) return;
 
   try {
-    const { data, error } = await supabase
-      .rpc("login_access_user", {
-        input_username: username,
-        input_password: password,
-      })
-      .maybeSingle();
-
-    if (error) throw error;
-    return (data as AccessUser | null) ?? null;
-  } catch (error) {
-    if (fallbackUser) return fallbackUser;
-    throw error;
+    await supabase.rpc("logout_access_user", {
+      input_session_token: getSessionToken(),
+    });
+  } catch {
+    // The local session is cleared by the caller even if the server session already expired.
   }
 }
 
 export async function listAccessUsers(): Promise<AccessUser[]> {
   if (!supabase) return [];
 
-  const { data, error } = await supabase.rpc("list_access_users");
+  const { data, error } = await supabase.rpc("list_access_users", {
+    input_session_token: getSessionToken(),
+  });
 
   if (error) throw error;
   return (data ?? []) as AccessUser[];
@@ -61,6 +69,7 @@ export async function createAccessUser(input: CreateAccessUserInput): Promise<Ac
 
   const { data, error } = await supabase
     .rpc("create_access_user", {
+      input_session_token: getSessionToken(),
       input_name: input.name,
       input_email: input.email,
       input_username: input.username,
@@ -75,54 +84,36 @@ export async function createAccessUser(input: CreateAccessUserInput): Promise<Ac
 export async function listMerchants(): Promise<MerchantWithStats[]> {
   if (!supabase) return [];
 
-  const { data: merchants, error } = await supabase
-    .from("merchants")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { data, error } = await supabase.rpc("list_admin_merchants", {
+    input_session_token: getSessionToken(),
+  });
 
   if (error) throw error;
-
-  const { data: scans, error: scanError } = await supabase
-    .from("scan_events")
-    .select("merchant_id, created_at")
-    .order("created_at", { ascending: false });
-
-  if (scanError) throw scanError;
-
-  return (merchants as Merchant[]).map((merchant) => {
-    const merchantScans = (scans ?? []).filter((scan) => scan.merchant_id === merchant.id);
-
-    return {
-      ...merchant,
-      scans: merchantScans.length,
-      last_scan_at: merchantScans[0]?.created_at ?? null,
-    };
-  });
+  return (data ?? []) as MerchantWithStats[];
 }
 
 export async function createMerchant(input: CreateMerchantInput) {
   if (!supabase) throw new Error("Supabase is not configured.");
 
   const { data, error } = await supabase
-    .from("merchants")
-    .insert({
-      name: input.name,
-      slug: input.slug,
-      location: input.location || null,
-      app_name: input.appName || null,
-      destination_type: input.destinationType,
-      ios_url: input.iosUrl || null,
-      android_url: input.androidUrl || null,
-      fallback_url: input.fallbackUrl || null,
-      appsflyer_url: input.appsflyerUrl || null,
-      appsflyer_pid: input.appsflyerPid || null,
-      campaign: input.campaign,
-      payout_amount: input.payoutAmount ? Number(input.payoutAmount) : null,
-      payout_currency: input.payoutAmount ? input.payoutCurrency : null,
-      is_active: input.isActive,
-      notes: input.notes || null,
+    .rpc("create_admin_merchant", {
+      input_session_token: getSessionToken(),
+      input_name: input.name,
+      input_slug: input.slug,
+      input_location: input.location || null,
+      input_app_name: input.appName || null,
+      input_destination_type: input.destinationType,
+      input_ios_url: input.iosUrl || null,
+      input_android_url: input.androidUrl || null,
+      input_fallback_url: input.fallbackUrl || null,
+      input_appsflyer_url: input.appsflyerUrl || null,
+      input_appsflyer_pid: input.appsflyerPid || null,
+      input_campaign: input.campaign,
+      input_payout_amount: input.payoutAmount ? Number(input.payoutAmount) : null,
+      input_payout_currency: input.payoutAmount ? input.payoutCurrency : null,
+      input_is_active: input.isActive,
+      input_notes: input.notes || null,
     })
-    .select("*")
     .single();
 
   if (error) throw error;
@@ -133,26 +124,25 @@ export async function updateMerchant(input: CreateMerchantInput & { id: string }
   if (!supabase) throw new Error("Supabase is not configured.");
 
   const { data, error } = await supabase
-    .from("merchants")
-    .update({
-      name: input.name,
-      slug: input.slug,
-      location: input.location || null,
-      app_name: input.appName || null,
-      destination_type: input.destinationType,
-      ios_url: input.iosUrl || null,
-      android_url: input.androidUrl || null,
-      fallback_url: input.fallbackUrl || null,
-      appsflyer_url: input.appsflyerUrl || null,
-      appsflyer_pid: input.appsflyerPid || null,
-      campaign: input.campaign,
-      payout_amount: input.payoutAmount ? Number(input.payoutAmount) : null,
-      payout_currency: input.payoutAmount ? input.payoutCurrency : null,
-      is_active: input.isActive,
-      notes: input.notes || null,
+    .rpc("update_admin_merchant", {
+      input_session_token: getSessionToken(),
+      input_id: input.id,
+      input_name: input.name,
+      input_slug: input.slug,
+      input_location: input.location || null,
+      input_app_name: input.appName || null,
+      input_destination_type: input.destinationType,
+      input_ios_url: input.iosUrl || null,
+      input_android_url: input.androidUrl || null,
+      input_fallback_url: input.fallbackUrl || null,
+      input_appsflyer_url: input.appsflyerUrl || null,
+      input_appsflyer_pid: input.appsflyerPid || null,
+      input_campaign: input.campaign,
+      input_payout_amount: input.payoutAmount ? Number(input.payoutAmount) : null,
+      input_payout_currency: input.payoutAmount ? input.payoutCurrency : null,
+      input_is_active: input.isActive,
+      input_notes: input.notes || null,
     })
-    .eq("id", input.id)
-    .select("*")
     .single();
 
   if (error) throw error;
@@ -162,7 +152,10 @@ export async function updateMerchant(input: CreateMerchantInput & { id: string }
 export async function deleteMerchant(id: string) {
   if (!supabase) throw new Error("Supabase is not configured.");
 
-  const { error } = await supabase.from("merchants").delete().eq("id", id);
+  const { error } = await supabase.rpc("delete_admin_merchant", {
+    input_session_token: getSessionToken(),
+    input_id: id,
+  });
 
   if (error) throw error;
 }
@@ -171,11 +164,10 @@ export async function getMerchantBySlug(slug: string) {
   if (!supabase) return null;
 
   const { data, error } = await supabase
-    .from("merchants")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+    .rpc("get_public_merchant_by_slug", {
+      input_slug: slug,
+    })
+    .maybeSingle();
 
   if (error) return null;
   return data as Merchant;
@@ -184,23 +176,28 @@ export async function getMerchantBySlug(slug: string) {
 export async function logScan(merchantId: string, deviceType: string) {
   if (!supabase) return;
 
-  await supabase.from("scan_events").insert({
-    merchant_id: merchantId,
-    device_type: deviceType,
-    user_agent: window.navigator.userAgent,
-    referrer: document.referrer || null,
+  await supabase.rpc("log_public_scan", {
+    input_merchant_id: merchantId,
+    input_device_type: deviceType,
+    input_user_agent: window.navigator.userAgent,
+    input_referrer: document.referrer || null,
   });
 }
 
-function getFallbackAdmin(username: string, password: string): AccessUser | null {
-  if (username.trim().toLowerCase() !== "admin" || password !== "654123") return null;
+function getSessionToken() {
+  const rawSession = window.localStorage.getItem("ai_qr_admin_session");
+  if (!rawSession) throw new Error("Please log in again.");
 
-  return {
-    id: "local-admin",
-    name: "Admin",
-    email: "admin@euphoria.local",
-    username: "admin",
-    is_admin: true,
-    created_at: new Date().toISOString(),
-  };
+  try {
+    const session = JSON.parse(rawSession) as AccessUser;
+    if (!session.session_token) throw new Error("Missing session.");
+    if (session.session_expires_at && new Date(session.session_expires_at).getTime() <= Date.now()) {
+      window.localStorage.removeItem("ai_qr_admin_session");
+      throw new Error("Session expired. Please log in again.");
+    }
+    return session.session_token;
+  } catch (error) {
+    if (error instanceof Error) throw error;
+    throw new Error("Please log in again.");
+  }
 }
