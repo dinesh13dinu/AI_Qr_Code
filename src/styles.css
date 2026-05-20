@@ -874,19 +874,22 @@ button {
   }
 
   .sidebar .brand-lockup {
+    width: 148px;
+    height: 38px;
+    overflow: hidden;
+    align-items: flex-start;
     padding: 0 4px;
   }
 
   .sidebar .brand-lockup img {
-    display: none;
+    display: block;
+    width: 142px;
+    max-width: none;
+    transform: translateY(-2px);
   }
 
   .mobile-brand-word {
-    display: block;
-    color: var(--ink);
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1;
+    display: none;
   }
 
   .workspace-switcher {
@@ -969,7 +972,7 @@ button {
   }
 
   .workspace {
-    padding: calc(82px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom));
+    padding: calc(104px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom));
   }
 
   .topbar {
