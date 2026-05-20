@@ -11,11 +11,13 @@ import { detectDevice, getMerchantDestination } from "./lib/url";
 import referlyLogo from "./assets/referly-logo.png";
 import "./styles.css";
 
+type DashboardPage = "qr" | "reporting" | "access";
+
 function Dashboard() {
   const [merchants, setMerchants] = useState<MerchantWithStats[]>([]);
   const [editingMerchant, setEditingMerchant] = useState<Merchant | null>(null);
   const [generatedMerchant, setGeneratedMerchant] = useState<MerchantWithStats | null>(null);
-  const [activePage, setActivePage] = useState<"qr" | "reporting" | "access">("qr");
+  const [activePage, setActivePage] = useState<DashboardPage>(() => getPageFromPath());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -36,6 +38,23 @@ function Dashboard() {
   useEffect(() => {
     loadMerchants();
   }, []);
+
+  useEffect(() => {
+    function handlePopState() {
+      setActivePage(getPageFromPath());
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  function navigateToPage(page: DashboardPage) {
+    const nextPath = getPathForPage(page);
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({}, "", nextPath);
+    }
+    setActivePage(page);
+  }
 
   async function logout() {
     await logoutAccessUser();
@@ -110,14 +129,14 @@ function Dashboard() {
         </button>
 
         <nav className="page-tabs" aria-label="Dashboard pages">
-          <button className={activePage === "qr" ? "selected" : ""} type="button" onClick={() => setActivePage("qr")}>
+          <button className={activePage === "qr" ? "selected" : ""} type="button" onClick={() => navigateToPage("qr")}>
             <QrCode size={20} />
             QR Codes
           </button>
           <button
             className={activePage === "reporting" ? "selected" : ""}
             type="button"
-            onClick={() => setActivePage("reporting")}
+            onClick={() => navigateToPage("reporting")}
           >
             <BarChart3 size={20} />
             Reporting
@@ -126,7 +145,7 @@ function Dashboard() {
             <button
               className={activePage === "access" ? "selected" : ""}
               type="button"
-              onClick={() => setActivePage("access")}
+              onClick={() => navigateToPage("access")}
             >
               <UsersRound size={20} />
               Access
@@ -206,7 +225,7 @@ function Dashboard() {
             onExport={exportCsv}
             onEdit={(merchant) => {
               setEditingMerchant(merchant);
-              setActivePage("qr");
+              navigateToPage("qr");
             }}
           />
         ) : (
@@ -375,8 +394,9 @@ function App() {
     const match = window.location.pathname.match(/^\/m\/([^/]+)/);
     return match?.[1] ?? null;
   }, []);
+  const isDashboardPath = ["/", "/reporting", "/access"].includes(window.location.pathname);
 
-  if (slug) {
+  if (slug && !isDashboardPath) {
     return <RedirectPage slug={slug} />;
   }
 
@@ -402,6 +422,18 @@ function getStoredUser() {
   } catch {
     return null;
   }
+}
+
+function getPageFromPath(): DashboardPage {
+  if (window.location.pathname === "/reporting") return "reporting";
+  if (window.location.pathname === "/access") return "access";
+  return "qr";
+}
+
+function getPathForPage(page: DashboardPage) {
+  if (page === "reporting") return "/reporting";
+  if (page === "access") return "/access";
+  return "/";
 }
 
 function getErrorMessage(caught: unknown, fallback: string) {

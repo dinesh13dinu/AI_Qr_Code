@@ -3,6 +3,14 @@
     {
       "source": "/m/:slug",
       "destination": "/index.html"
+    },
+    {
+      "source": "/reporting",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/access",
+      "destination": "/index.html"
     }
   ]
 }
