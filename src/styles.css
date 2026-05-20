@@ -88,6 +88,10 @@ button {
   object-fit: contain;
 }
 
+.mobile-brand-word {
+  display: none;
+}
+
 .login-brand {
   justify-content: center;
   width: 100%;
@@ -251,6 +255,26 @@ button {
   border-color: #8d8d8d;
   background: #ffffff;
   color: #111111;
+}
+
+.logout-icon-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #8d8d8d;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111111;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.logout-icon-button:hover {
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
 }
 
 .merchant-actions .danger-button {
@@ -855,7 +879,15 @@ button {
   }
 
   .brand-lockup img {
-    width: 132px;
+    display: none;
+  }
+
+  .mobile-brand-word {
+    display: block;
+    color: var(--ink);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
   }
 
   .workspace-switcher {
@@ -864,6 +896,7 @@ button {
 
   .page-tabs {
     position: fixed;
+    top: auto;
     right: 0;
     bottom: 0;
     left: 0;
@@ -913,18 +946,28 @@ button {
     display: none;
   }
 
-  .sidebar-footer .refresh-button {
+  .sidebar-footer .logout-icon-button {
     width: 42px;
     min-height: 42px;
     border-color: var(--line);
     border-radius: 50%;
+    background: transparent;
     padding: 0;
     font-size: 0;
   }
 
-  .sidebar-footer .refresh-button svg {
+  .sidebar-footer .logout-icon-button svg {
     width: 18px;
     height: 18px;
+  }
+
+  .sidebar-footer .logout-icon-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 
   .workspace {

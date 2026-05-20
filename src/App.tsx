@@ -101,6 +101,7 @@ function Dashboard() {
       <aside className="sidebar">
         <div className="brand-lockup">
           <img src={referlyLogo} alt="Referly" />
+          <span className="mobile-brand-word">Referly</span>
         </div>
 
         <button className="workspace-switcher" type="button">
@@ -135,9 +136,9 @@ function Dashboard() {
 
         <div className="sidebar-footer">
           {currentUser && <span className="user-pill">{currentUser.name}</span>}
-          <button className="refresh-button secondary-button" type="button" onClick={logout}>
+          <button className="logout-icon-button" type="button" onClick={logout} aria-label="Logout" title="Logout">
             <LogOut size={18} />
-            Logout
+            <span>Logout</span>
           </button>
         </div>
       </aside>
