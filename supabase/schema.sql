@@ -144,6 +144,10 @@ with check (false);
 
 drop function if exists public.list_access_users();
 drop function if exists public.create_access_user(text, text, text, text);
+drop function if exists public.login_access_user(text, text);
+drop function if exists public.logout_access_user(text);
+drop function if exists public.list_access_users(text);
+drop function if exists public.create_access_user(text, text, text, text, text);
 
 create or replace function public.require_access_user(input_session_token text, input_admin boolean default false)
 returns uuid
