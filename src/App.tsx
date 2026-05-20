@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, BarChart3, Download, LogOut, QrCode, RefreshCw, ShieldCheck } from "lucide-react";
+import { ArrowRight, BarChart3, Download, LogOut, QrCode, RefreshCw, ShieldCheck, UsersRound } from "lucide-react";
+import { AccessPanel } from "./components/AccessPanel";
 import { LoginScreen } from "./components/LoginScreen";
 import { MerchantForm } from "./components/MerchantForm";
 import { MerchantTable } from "./components/MerchantTable";
 import { StatsStrip } from "./components/StatsStrip";
 import { getMerchantBySlug, listMerchants, logScan } from "./lib/api";
-import { isSupabaseReady, type Merchant, type MerchantWithStats } from "./lib/supabase";
+import { isSupabaseReady, type AccessUser, type Merchant, type MerchantWithStats } from "./lib/supabase";
 import { detectDevice, getMerchantDestination } from "./lib/url";
 import euphoriaLogo from "./assets/euphoria-logo.svg";
 import "./styles.css";
@@ -14,7 +15,7 @@ function Dashboard() {
   const [merchants, setMerchants] = useState<MerchantWithStats[]>([]);
   const [editingMerchant, setEditingMerchant] = useState<Merchant | null>(null);
   const [generatedMerchant, setGeneratedMerchant] = useState<MerchantWithStats | null>(null);
-  const [activePage, setActivePage] = useState<"qr" | "reporting">("qr");
+  const [activePage, setActivePage] = useState<"qr" | "reporting" | "access">("qr");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -91,6 +92,8 @@ function Dashboard() {
     URL.revokeObjectURL(link.href);
   }
 
+  const currentUser = getStoredUser();
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -126,6 +129,16 @@ function Dashboard() {
           <BarChart3 size={18} />
           Reporting
         </button>
+        {currentUser?.is_admin && (
+          <button
+            className={activePage === "access" ? "selected" : ""}
+            type="button"
+            onClick={() => setActivePage("access")}
+          >
+            <UsersRound size={18} />
+            Access
+          </button>
+        )}
       </nav>
 
       {activePage === "qr" ? (
@@ -167,7 +180,7 @@ function Dashboard() {
             </section>
           )}
         </>
-      ) : (
+      ) : activePage === "reporting" ? (
         <ReportingPage
           merchants={merchants}
           isLoading={isLoading}
@@ -178,6 +191,8 @@ function Dashboard() {
             setActivePage("qr");
           }}
         />
+      ) : (
+        <AccessPanel />
       )}
     </main>
   );
@@ -336,9 +351,7 @@ function RedirectPage({ slug }: { slug: string }) {
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    () => window.localStorage.getItem("ai_qr_admin_session") === "active",
-  );
+  const [currentUser, setCurrentUser] = useState<AccessUser | null>(() => getStoredUser());
   const slug = useMemo(() => {
     const match = window.location.pathname.match(/^\/m\/([^/]+)/);
     return match?.[1] ?? null;
@@ -348,11 +361,22 @@ function App() {
     return <RedirectPage slug={slug} />;
   }
 
-  if (!isLoggedIn) {
-    return <LoginScreen onLogin={() => setIsLoggedIn(true)} />;
+  if (!currentUser) {
+    return <LoginScreen onLogin={setCurrentUser} />;
   }
 
   return <Dashboard />;
+}
+
+function getStoredUser() {
+  const rawSession = window.localStorage.getItem("ai_qr_admin_session");
+  if (!rawSession || rawSession === "active") return null;
+
+  try {
+    return JSON.parse(rawSession) as AccessUser;
+  } catch {
+    return null;
+  }
 }
 
 export default App;

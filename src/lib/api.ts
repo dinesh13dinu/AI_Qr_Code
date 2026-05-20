@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import type { Merchant, MerchantWithStats } from "./supabase";
+import type { AccessUser, Merchant, MerchantWithStats } from "./supabase";
 
 type CreateMerchantInput = {
   id?: string;
@@ -19,6 +19,58 @@ type CreateMerchantInput = {
   isActive: boolean;
   notes: string;
 };
+
+type CreateAccessUserInput = {
+  name: string;
+  email: string;
+  username: string;
+  password: string;
+};
+
+export async function loginAccessUser(username: string, password: string): Promise<AccessUser | null> {
+  const fallbackUser = getFallbackAdmin(username, password);
+  if (!supabase) return fallbackUser;
+
+  try {
+    const { data, error } = await supabase
+      .rpc("login_access_user", {
+        input_username: username,
+        input_password: password,
+      })
+      .maybeSingle();
+
+    if (error) throw error;
+    return (data as AccessUser | null) ?? null;
+  } catch (error) {
+    if (fallbackUser) return fallbackUser;
+    throw error;
+  }
+}
+
+export async function listAccessUsers(): Promise<AccessUser[]> {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase.rpc("list_access_users");
+
+  if (error) throw error;
+  return (data ?? []) as AccessUser[];
+}
+
+export async function createAccessUser(input: CreateAccessUserInput): Promise<AccessUser> {
+  if (!supabase) throw new Error("Supabase is not configured.");
+
+  const { data, error } = await supabase
+    .rpc("create_access_user", {
+      input_name: input.name,
+      input_email: input.email,
+      input_username: input.username,
+      input_password: input.password,
+    })
+    .single();
+
+  if (error) throw error;
+  return data as AccessUser;
+}
 
 export async function listMerchants(): Promise<MerchantWithStats[]> {
   if (!supabase) return [];
@@ -138,4 +190,17 @@ export async function logScan(merchantId: string, deviceType: string) {
     user_agent: window.navigator.userAgent,
     referrer: document.referrer || null,
   });
+}
+
+function getFallbackAdmin(username: string, password: string): AccessUser | null {
+  if (username.trim().toLowerCase() !== "admin" || password !== "654123") return null;
+
+  return {
+    id: "local-admin",
+    name: "Admin",
+    email: "admin@euphoria.local",
+    username: "admin",
+    is_admin: true,
+    created_at: new Date().toISOString(),
+  };
 }

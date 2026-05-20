@@ -681,6 +681,61 @@ button {
   text-transform: uppercase;
 }
 
+.access-list {
+  display: grid;
+  gap: 12px;
+}
+
+.access-card {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  padding: 14px;
+}
+
+.access-icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 15px;
+  background: #f4f0ff;
+  color: var(--red);
+}
+
+.access-card h3 {
+  color: var(--ink);
+  font-size: 17px;
+}
+
+.access-card p {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.access-card span,
+.access-card strong {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: #f4f0ff;
+  color: #4c1d95;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+}
+
+.access-card strong {
+  margin-top: 0;
+  background: #eafff3;
+  color: #147344;
+}
+
 .redirect-screen,
 .login-screen {
   display: grid;
@@ -813,7 +868,7 @@ button {
 
   .page-tabs {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
     border-radius: 18px;
   }
 
@@ -971,6 +1026,14 @@ button {
 
   .report-row {
     align-items: start;
+  }
+
+  .access-card {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .access-card strong {
+    grid-column: 2;
   }
 
   .report-row > * {

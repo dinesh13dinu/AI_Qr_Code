@@ -1,29 +1,39 @@
 import { FormEvent, useState } from "react";
 import euphoriaLogo from "../assets/euphoria-logo.svg";
+import { loginAccessUser } from "../lib/api";
+import type { AccessUser } from "../lib/supabase";
 
 type LoginScreenProps = {
-  onLogin: () => void;
+  onLogin: (user: AccessUser) => void;
 };
-
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "654123";
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError("");
 
-    if (username.trim().toLowerCase() === ADMIN_USERNAME.toLowerCase() && password === ADMIN_PASSWORD) {
-      window.localStorage.setItem("ai_qr_admin_session", "active");
-      onLogin();
-      return;
-    }
+    try {
+      setIsLoading(true);
+      const user = await loginAccessUser(username, password);
 
-    setError("Wrong username or password.");
+      if (!user) {
+        setError("Wrong username or password.");
+        return;
+      }
+
+      window.localStorage.setItem("ai_qr_admin_session", JSON.stringify(user));
+      onLogin(user);
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : "Could not log in.";
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -51,7 +61,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           placeholder="654123"
         />
         {error && <p className="form-error">{error}</p>}
-        <button type="submit">Login</button>
+        <button type="submit" disabled={isLoading}>{isLoading ? "Checking" : "Login"}</button>
       </form>
     </main>
   );

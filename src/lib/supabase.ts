@@ -42,3 +42,12 @@ export type MerchantWithStats = Merchant & {
   scans: number;
   last_scan_at: string | null;
 };
+
+export type AccessUser = {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  is_admin: boolean;
+  created_at: string;
+};
