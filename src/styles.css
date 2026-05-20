@@ -792,6 +792,7 @@ button {
 .login-screen {
   display: grid;
   min-height: 100vh;
+  min-height: 100dvh;
   place-items: center;
   padding: 24px;
   background: #ffffff;
@@ -1145,7 +1146,8 @@ button {
 
   .login-screen,
   .redirect-screen {
-    padding: 18px 14px;
+    min-height: 100dvh;
+    padding: max(18px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
   }
 
   .login-card,
