@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import euphoriaLogo from "../assets/euphoria-logo.svg";
+import referlyLogo from "../assets/referly-logo.png";
 import { loginAccessUser } from "../lib/api";
 import type { AccessUser } from "../lib/supabase";
 
@@ -45,7 +45,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     <main className="login-screen">
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="brand-lockup login-brand">
-          <img src={euphoriaLogo} alt="Euphoria" />
+          <img src={referlyLogo} alt="Referly" />
         </div>
         <h1>Admin login</h1>
         <label htmlFor="admin-username">Username</label>

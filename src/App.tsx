@@ -8,7 +8,7 @@ import { StatsStrip } from "./components/StatsStrip";
 import { getMerchantBySlug, listMerchants, logScan, logoutAccessUser } from "./lib/api";
 import { isSupabaseReady, type AccessUser, type Merchant, type MerchantWithStats } from "./lib/supabase";
 import { detectDevice, getMerchantDestination } from "./lib/url";
-import euphoriaLogo from "./assets/euphoria-logo.svg";
+import referlyLogo from "./assets/referly-logo.png";
 import "./styles.css";
 
 function Dashboard() {
@@ -99,9 +99,11 @@ function Dashboard() {
     <main className="app-shell">
       <header className="topbar">
         <div className="brand-lockup">
-          <img src={euphoriaLogo} alt="Euphoria" />
+          <img src={referlyLogo} alt="Referly" />
+          <span>Enterprise QR Console</span>
         </div>
         <div className="topbar-actions">
+          {currentUser && <span className="user-pill">{currentUser.name}</span>}
           <button className="refresh-button secondary-button" type="button" onClick={logout}>
             <LogOut size={18} />
             Logout
