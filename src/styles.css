@@ -689,7 +689,7 @@ button {
   gap: 14px;
 }
 
-.mobile-collapse-toggle {
+.mobile-merchant-toggle {
   display: none;
 }
 
@@ -1059,42 +1059,6 @@ button {
     width: 100%;
   }
 
-  .mobile-collapse-toggle {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    min-height: 48px;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: #ffffff;
-    color: var(--ink);
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 0 14px;
-    text-align: left;
-  }
-
-  .mobile-collapse-toggle span:nth-child(2) {
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 400;
-  }
-
-  .mobile-collapse-toggle svg {
-    transition: transform 140ms ease;
-  }
-
-  .report-qr-panel:not(.mobile-collapsed) .mobile-collapse-toggle svg {
-    transform: rotate(180deg);
-  }
-
-  .report-qr-panel.mobile-collapsed .merchant-list,
-  .report-qr-panel.mobile-collapsed .empty-state {
-    display: none;
-  }
-
   .button-row,
   .merchant-actions {
     display: grid;
@@ -1114,6 +1078,63 @@ button {
     grid-template-columns: 1fr;
     gap: 13px;
     padding: 16px;
+  }
+
+  .mobile-merchant-toggle {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 58px;
+    border: 0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+  }
+
+  .mobile-merchant-toggle > span:first-child {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .mobile-merchant-toggle strong {
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-merchant-toggle small {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-merchant-toggle svg {
+    color: #5f6368;
+    transition: transform 140ms ease;
+  }
+
+  .merchant-row:not(.mobile-merchant-collapsed) .mobile-merchant-toggle svg {
+    transform: rotate(180deg);
+  }
+
+  .merchant-row.mobile-merchant-collapsed {
+    gap: 0;
+  }
+
+  .merchant-row.mobile-merchant-collapsed .qr-image,
+  .merchant-row.mobile-merchant-collapsed .merchant-main,
+  .merchant-row.mobile-merchant-collapsed .merchant-stats {
+    display: none;
   }
 
   .qr-image {

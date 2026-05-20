@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { Copy, Download, Edit, ExternalLink, QrCode, Trash2 } from "lucide-react";
+import { ChevronDown, Copy, Download, Edit, ExternalLink, QrCode, Trash2 } from "lucide-react";
 import type { Merchant, MerchantWithStats } from "../lib/supabase";
 import { deleteMerchant } from "../lib/api";
 import { getMerchantDestination, getQrUrl } from "../lib/url";
@@ -15,6 +15,7 @@ type MerchantTableProps = {
 export function MerchantTable({ merchants, onEdit, onChanged, showStats = false }: MerchantTableProps) {
   const [qrImages, setQrImages] = useState<Record<string, string>>({});
   const [deletingId, setDeletingId] = useState("");
+  const [expandedMerchants, setExpandedMerchants] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let mounted = true;
@@ -80,9 +81,36 @@ export function MerchantTable({ merchants, onEdit, onChanged, showStats = false 
       {merchants.map((merchant) => {
         const qrUrl = getQrUrl(merchant.slug);
         const finalUrl = getMerchantDestination(merchant, "desktop");
+        const isExpanded = expandedMerchants[merchant.id] ?? false;
 
         return (
-          <article className={showStats ? "merchant-row" : "merchant-row without-stats"} key={merchant.id}>
+          <article
+            className={`${showStats ? "merchant-row" : "merchant-row without-stats"} ${
+              isExpanded ? "" : "mobile-merchant-collapsed"
+            }`}
+            key={merchant.id}
+          >
+            <button
+              className="mobile-merchant-toggle"
+              type="button"
+              onClick={() =>
+                setExpandedMerchants((current) => ({
+                  ...current,
+                  [merchant.id]: !isExpanded,
+                }))
+              }
+              aria-expanded={isExpanded}
+            >
+              <span>
+                <strong>{merchant.name}</strong>
+                <small>{merchant.location || "No location"}</small>
+              </span>
+              <span className={merchant.is_active ? "status-pill active" : "status-pill"}>
+                {merchant.is_active ? "Active" : "Paused"}
+              </span>
+              <ChevronDown size={18} />
+            </button>
+
             <img className="qr-image" src={qrImages[merchant.id]} alt={`${merchant.name} QR code`} />
 
             <div className="merchant-main">

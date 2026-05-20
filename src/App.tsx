@@ -246,7 +246,6 @@ type ReportingPageProps = {
 
 function ReportingPage({ merchants, isLoading, onRefresh, onExport, onEdit }: ReportingPageProps) {
   const [reportView, setReportView] = useState<"campaign" | "qr">("campaign");
-  const [isQrListExpanded, setIsQrListExpanded] = useState(false);
 
   return (
     <>
@@ -330,17 +329,7 @@ function ReportingPage({ merchants, isLoading, onRefresh, onExport, onEdit }: Re
             </div>
           )
         ) : (
-          <div className={isQrListExpanded ? "report-qr-panel" : "report-qr-panel mobile-collapsed"}>
-            <button
-              className="mobile-collapse-toggle"
-              type="button"
-              onClick={() => setIsQrListExpanded((current) => !current)}
-              aria-expanded={isQrListExpanded}
-            >
-              <span>{isQrListExpanded ? "Hide merchant QR codes" : "Show merchant QR codes"}</span>
-              <span>{merchants.length} total</span>
-              <ChevronDown size={18} />
-            </button>
+          <div className="report-qr-panel">
             <MerchantTable merchants={merchants} onEdit={onEdit} onChanged={onRefresh} />
           </div>
         )}
