@@ -131,7 +131,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           id="merchant-name"
           value={form.name}
           onChange={(event) => updateField("name", event.target.value)}
-          placeholder="Partner QR Merchant"
         />
       </div>
 
@@ -141,7 +140,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           id="merchant-location"
           value={form.location}
           onChange={(event) => updateField("location", event.target.value)}
-          placeholder="Dubai Mall"
         />
       </div>
 
@@ -151,7 +149,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           id="app-name"
           value={form.appName}
           onChange={(event) => updateField("appName", event.target.value)}
-          placeholder="Client app name"
         />
       </div>
 
@@ -161,7 +158,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           id="campaign"
           value={form.campaign}
           onChange={(event) => updateField("campaign", event.target.value)}
-          placeholder={slug || "merchant-id"}
         />
       </div>
 
@@ -193,7 +189,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
               id="ios-url"
               value={form.iosUrl}
               onChange={(event) => updateField("iosUrl", event.target.value)}
-              placeholder="https://apps.apple.com/app/..."
             />
           </div>
           <div>
@@ -202,7 +197,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
               id="android-url"
               value={form.androidUrl}
               onChange={(event) => updateField("androidUrl", event.target.value)}
-              placeholder="https://play.google.com/store/apps/details?id=..."
             />
           </div>
           <div className="wide">
@@ -211,7 +205,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
               id="fallback-url"
               value={form.fallbackUrl}
               onChange={(event) => updateField("fallbackUrl", event.target.value)}
-              placeholder="https://example.com"
             />
           </div>
         </>
@@ -223,7 +216,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
               id="appsflyer-url"
               value={form.appsflyerUrl}
               onChange={(event) => updateField("appsflyerUrl", event.target.value)}
-              placeholder="https://yourbrand.app.link/abcd"
             />
           </div>
           <div>
@@ -232,7 +224,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
               id="appsflyer-pid"
               value={form.appsflyerPid}
               onChange={(event) => updateField("appsflyerPid", event.target.value)}
-              placeholder="partner_qr"
             />
           </div>
           <div>
@@ -241,7 +232,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
               id="appsflyer-fallback"
               value={form.fallbackUrl}
               onChange={(event) => updateField("fallbackUrl", event.target.value)}
-              placeholder="Optional website URL"
             />
           </div>
         </>
@@ -257,7 +247,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
             step="0.01"
             value={form.payoutAmount}
             onChange={(event) => updateField("payoutAmount", event.target.value)}
-            placeholder="1.00"
           />
           <select
             aria-label="Payout currency"
@@ -276,7 +265,6 @@ export function MerchantForm({ editingMerchant, onCancelEdit, onSaved }: Merchan
           id="notes"
           value={form.notes}
           onChange={(event) => updateField("notes", event.target.value)}
-          placeholder="Contact person, placement notes, campaign details"
         />
       </div>
 

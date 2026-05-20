@@ -54,7 +54,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
-          placeholder="Username"
         />
         <label htmlFor="admin-password">Password</label>
         <input
@@ -63,7 +62,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           autoComplete="current-password"
-          placeholder="Password"
         />
         {error && <p className="form-error">{error}</p>}
         <button type="submit" disabled={isLoading}>{isLoading ? "Checking" : "Login"}</button>

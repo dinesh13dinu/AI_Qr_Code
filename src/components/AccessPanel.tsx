@@ -92,7 +92,6 @@ export function AccessPanel() {
               id="access-name"
               value={form.name}
               onChange={(event) => updateField("name", event.target.value)}
-              placeholder="Full name"
             />
           </div>
           <div>
@@ -102,7 +101,6 @@ export function AccessPanel() {
               type="email"
               value={form.email}
               onChange={(event) => updateField("email", event.target.value)}
-              placeholder="name@example.com"
             />
           </div>
           <div>
@@ -111,7 +109,6 @@ export function AccessPanel() {
               id="access-username"
               value={form.username}
               onChange={(event) => updateField("username", event.target.value)}
-              placeholder="username"
             />
           </div>
           <div>
@@ -122,7 +119,6 @@ export function AccessPanel() {
               value={form.password}
               onChange={(event) => updateField("password", event.target.value)}
               autoComplete="new-password"
-              placeholder="Create password"
             />
           </div>
           <div className="form-footer wide">
