@@ -874,18 +874,18 @@ button {
   }
 
   .sidebar .brand-lockup {
-    width: 148px;
-    height: 38px;
-    overflow: hidden;
-    align-items: flex-start;
+    width: 184px;
+    height: 44px;
+    align-items: center;
     padding: 0 4px;
   }
 
   .sidebar .brand-lockup img {
     display: block;
-    width: 142px;
+    width: 178px;
+    height: auto;
     max-width: none;
-    transform: translateY(-2px);
+    transform: none;
   }
 
   .mobile-brand-word {
@@ -972,17 +972,11 @@ button {
   }
 
   .workspace {
-    padding: calc(104px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom));
+    padding: calc(78px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom));
   }
 
   .topbar {
-    min-height: auto;
-    margin-bottom: 12px;
-    padding: 0 2px;
-  }
-
-  .topbar h1 {
-    font-size: 22px;
+    display: none;
   }
 
   .stats-strip {
@@ -1001,7 +995,7 @@ button {
   }
 
   .panel {
-    margin-top: 14px;
+    margin-top: 0;
     border-radius: 12px;
     padding: 18px 14px;
   }
