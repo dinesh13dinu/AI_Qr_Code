@@ -26,6 +26,11 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         return;
       }
 
+      if (!user.session_token) {
+        setError("Secure session was not created. Please run the latest Supabase SQL once more.");
+        return;
+      }
+
       window.localStorage.setItem("ai_qr_admin_session", JSON.stringify(user));
       onLogin(user);
     } catch (caught) {

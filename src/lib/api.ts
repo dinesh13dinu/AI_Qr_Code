@@ -186,11 +186,15 @@ export async function logScan(merchantId: string, deviceType: string) {
 
 function getSessionToken() {
   const rawSession = window.localStorage.getItem("ai_qr_admin_session");
-  if (!rawSession) throw new Error("Please log in again.");
+  if (!rawSession) throw new Error("Please log out and log in again.");
 
   try {
     const session = JSON.parse(rawSession) as AccessUser;
-    if (!session.session_token) throw new Error("Missing session.");
+    if (!session.session_token) {
+      window.localStorage.removeItem("ai_qr_admin_session");
+      window.location.reload();
+      throw new Error("Please log in again.");
+    }
     if (session.session_expires_at && new Date(session.session_expires_at).getTime() <= Date.now()) {
       window.localStorage.removeItem("ai_qr_admin_session");
       throw new Error("Session expired. Please log in again.");
