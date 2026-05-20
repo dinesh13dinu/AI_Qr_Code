@@ -175,9 +175,20 @@ export function AccessPanel() {
 }
 
 function getErrorMessage(caught: unknown, fallback: string) {
-  if (caught instanceof Error) return caught.message;
+  if (caught instanceof Error) return normalizeAccessError(caught.message);
   if (caught && typeof caught === "object" && "message" in caught) {
-    return String((caught as { message?: unknown }).message || fallback);
+    return normalizeAccessError(String((caught as { message?: unknown }).message || fallback));
   }
   return fallback;
+}
+
+function normalizeAccessError(message: string) {
+  if (
+    message.includes("public.list_access_users") ||
+    message.includes("public.create_access_user") ||
+    message.includes("schema cache")
+  ) {
+    return "Access user setup is not installed in Supabase yet. Run the latest supabase/schema.sql in Supabase SQL Editor, then refresh this page.";
+  }
+  return message;
 }
