@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, BarChart3, Download, LogOut, QrCode, RefreshCw, ShieldCheck, UsersRound } from "lucide-react";
+import { ArrowRight, BarChart3, ChevronDown, Download, LogOut, QrCode, RefreshCw, ShieldCheck, UsersRound } from "lucide-react";
 import { AccessPanel } from "./components/AccessPanel";
 import { LoginScreen } from "./components/LoginScreen";
 import { MerchantForm } from "./components/MerchantForm";
@@ -94,109 +94,124 @@ function Dashboard() {
   }
 
   const currentUser = getStoredUser();
+  const pageTitle = activePage === "qr" ? "QR codes" : activePage === "reporting" ? "Reporting" : "Access";
 
   return (
     <main className="app-shell">
-      <header className="topbar">
+      <aside className="sidebar">
         <div className="brand-lockup">
           <img src={referlyLogo} alt="Referly" />
-          <span>Enterprise QR Console</span>
         </div>
-        <div className="topbar-actions">
+
+        <button className="workspace-switcher" type="button">
+          <span>Referly</span>
+          <ChevronDown size={18} />
+        </button>
+
+        <nav className="page-tabs" aria-label="Dashboard pages">
+          <button className={activePage === "qr" ? "selected" : ""} type="button" onClick={() => setActivePage("qr")}>
+            <QrCode size={20} />
+            QR Codes
+          </button>
+          <button
+            className={activePage === "reporting" ? "selected" : ""}
+            type="button"
+            onClick={() => setActivePage("reporting")}
+          >
+            <BarChart3 size={20} />
+            Reporting
+          </button>
+          {currentUser?.is_admin && (
+            <button
+              className={activePage === "access" ? "selected" : ""}
+              type="button"
+              onClick={() => setActivePage("access")}
+            >
+              <UsersRound size={20} />
+              Access
+            </button>
+          )}
+        </nav>
+
+        <div className="sidebar-footer">
           {currentUser && <span className="user-pill">{currentUser.name}</span>}
           <button className="refresh-button secondary-button" type="button" onClick={logout}>
             <LogOut size={18} />
             Logout
           </button>
         </div>
-      </header>
+      </aside>
 
-      {!isSupabaseReady && (
-        <div className="notice">
-          Supabase is not connected locally. Add Vercel variables and redeploy, or create a local `.env`.
-        </div>
-      )}
+      <div className="workspace">
+        <header className="topbar">
+          <div>
+            <span>Dashboard</span>
+            <h1>{pageTitle}</h1>
+          </div>
+        </header>
 
-      {error && <div className="notice error">{error}</div>}
-
-      <nav className="page-tabs" aria-label="Dashboard pages">
-        <button className={activePage === "qr" ? "selected" : ""} type="button" onClick={() => setActivePage("qr")}>
-          <QrCode size={18} />
-          QR Codes
-        </button>
-        <button
-          className={activePage === "reporting" ? "selected" : ""}
-          type="button"
-          onClick={() => setActivePage("reporting")}
-        >
-          <BarChart3 size={18} />
-          Reporting
-        </button>
-        {currentUser?.is_admin && (
-          <button
-            className={activePage === "access" ? "selected" : ""}
-            type="button"
-            onClick={() => setActivePage("access")}
-          >
-            <UsersRound size={18} />
-            Access
-          </button>
+        {!isSupabaseReady && (
+          <div className="notice">
+            Supabase is not connected locally. Add Vercel variables and redeploy, or create a local `.env`.
+          </div>
         )}
-      </nav>
 
-      {activePage === "qr" ? (
-        <>
-          <section className="panel">
-            <div className="panel-heading">
-              <div>
-                <h2>{editingMerchant ? "Edit merchant QR" : "Create merchant QR"}</h2>
-                <p>Add a direct link today, or switch to a Branch attribution link when the client provides one.</p>
-              </div>
-            </div>
-            <MerchantForm
-              editingMerchant={editingMerchant}
-              onCancelEdit={() => setEditingMerchant(null)}
-              onSaved={(merchant) => {
-                setEditingMerchant(null);
-                showGeneratedMerchant(merchant);
-                loadMerchants();
-              }}
-            />
-          </section>
+        {error && <div className="notice error">{error}</div>}
 
-          {generatedMerchant && (
-            <section className="panel generated-panel">
+        {activePage === "qr" ? (
+          <>
+            <section className="panel">
               <div className="panel-heading">
                 <div>
-                  <h2>Generated QR code</h2>
-                  <p>This QR is shown for this session. Refreshing the page clears it from here.</p>
+                  <h2>{editingMerchant ? "Edit merchant QR" : "Create merchant QR"}</h2>
+                  <p>Add a direct link today, or switch to a Branch attribution link when the client provides one.</p>
                 </div>
               </div>
-              <MerchantTable
-                merchants={[generatedMerchant]}
-                onEdit={setEditingMerchant}
-                onChanged={() => {
-                  setGeneratedMerchant(null);
+              <MerchantForm
+                editingMerchant={editingMerchant}
+                onCancelEdit={() => setEditingMerchant(null)}
+                onSaved={(merchant) => {
+                  setEditingMerchant(null);
+                  showGeneratedMerchant(merchant);
                   loadMerchants();
                 }}
               />
             </section>
-          )}
-        </>
-      ) : activePage === "reporting" ? (
-        <ReportingPage
-          merchants={merchants}
-          isLoading={isLoading}
-          onRefresh={loadMerchants}
-          onExport={exportCsv}
-          onEdit={(merchant) => {
-            setEditingMerchant(merchant);
-            setActivePage("qr");
-          }}
-        />
-      ) : (
-        <AccessPanel />
-      )}
+
+            {generatedMerchant && (
+              <section className="panel generated-panel">
+                <div className="panel-heading">
+                  <div>
+                    <h2>Generated QR code</h2>
+                    <p>This QR is shown for this session. Refreshing the page clears it from here.</p>
+                  </div>
+                </div>
+                <MerchantTable
+                  merchants={[generatedMerchant]}
+                  onEdit={setEditingMerchant}
+                  onChanged={() => {
+                    setGeneratedMerchant(null);
+                    loadMerchants();
+                  }}
+                />
+              </section>
+            )}
+          </>
+        ) : activePage === "reporting" ? (
+          <ReportingPage
+            merchants={merchants}
+            isLoading={isLoading}
+            onRefresh={loadMerchants}
+            onExport={exportCsv}
+            onEdit={(merchant) => {
+              setEditingMerchant(merchant);
+              setActivePage("qr");
+            }}
+          />
+        ) : (
+          <AccessPanel />
+        )}
+      </div>
     </main>
   );
 }
