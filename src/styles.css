@@ -871,14 +871,13 @@ button {
     border-bottom: 1px solid var(--line-soft);
     background: rgba(255, 255, 255, 0.96);
     padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
-    backdrop-filter: blur(18px);
   }
 
   .sidebar .brand-lockup {
     padding: 0 4px;
   }
 
-  .brand-lockup img {
+  .sidebar .brand-lockup img {
     display: none;
   }
 
@@ -908,7 +907,6 @@ button {
     background: rgba(255, 255, 255, 0.98);
     padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
     box-shadow: 0 -12px 30px rgba(17, 17, 17, 0.08);
-    backdrop-filter: blur(18px);
   }
 
   .page-tabs button {
