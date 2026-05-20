@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Plus, RefreshCw, UserRound } from "lucide-react";
-import { createAccessUser, listAccessUsers } from "../lib/api";
+import { createAccessUser, getCurrentAccessUser, listAccessUsers } from "../lib/api";
 import type { AccessUser } from "../lib/supabase";
 
 const emptyForm = {
@@ -24,7 +24,11 @@ export function AccessPanel() {
     try {
       setUsers(await listAccessUsers());
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Could not load users.";
+      const currentUser = getCurrentAccessUser();
+      if (currentUser) {
+        setUsers([currentUser]);
+      }
+      const message = getErrorMessage(caught, "Could not load users.");
       setError(message);
     } finally {
       setIsLoading(false);
@@ -161,7 +165,7 @@ export function AccessPanel() {
               {user.is_admin && <strong>Admin</strong>}
             </article>
           ))}
-          {users.length === 0 && !isLoading && (
+          {users.length === 0 && !isLoading && !error && (
             <div className="empty-state">
               <UserRound size={32} />
               <h2>No users yet</h2>
@@ -172,4 +176,12 @@ export function AccessPanel() {
       </section>
     </>
   );
+}
+
+function getErrorMessage(caught: unknown, fallback: string) {
+  if (caught instanceof Error) return caught.message;
+  if (caught && typeof caught === "object" && "message" in caught) {
+    return String((caught as { message?: unknown }).message || fallback);
+  }
+  return fallback;
 }

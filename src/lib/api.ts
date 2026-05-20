@@ -64,6 +64,23 @@ export async function listAccessUsers(): Promise<AccessUser[]> {
   return (data ?? []) as AccessUser[];
 }
 
+export function getCurrentAccessUser(): AccessUser | null {
+  const rawSession = window.localStorage.getItem("ai_qr_admin_session");
+  if (!rawSession || rawSession === "active") return null;
+
+  try {
+    const session = JSON.parse(rawSession) as AccessUser;
+    if (!session.session_token) return null;
+    if (session.session_expires_at && new Date(session.session_expires_at).getTime() <= Date.now()) {
+      window.localStorage.removeItem("ai_qr_admin_session");
+      return null;
+    }
+    return session;
+  } catch {
+    return null;
+  }
+}
+
 export async function createAccessUser(input: CreateAccessUserInput): Promise<AccessUser> {
   if (!supabase) throw new Error("Supabase is not configured.");
 
