@@ -977,7 +977,7 @@ button {
   }
 
   .workspace {
-    padding: calc(78px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom));
+    padding: calc(98px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom));
   }
 
   .topbar {
